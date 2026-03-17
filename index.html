@@ -1,1064 +1,1812 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    :root {
-      --bg: #0b1220;
-      --bg-soft: #111a2c;
-      --panel: rgba(255,255,255,0.92);
-      --panel-strong: #ffffff;
-      --text: #0f172a;
-      --text-soft: #475569;
-      --line: rgba(15, 23, 42, 0.08);
-      --gold: #d4af37;
-      --gold-soft: #f2dd93;
-      --red: #b30000;
-      --red-strong: #d10000;
-      --shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
-      --radius-xl: 26px;
-      --radius-lg: 20px;
-      --radius-md: 16px;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(212,175,55,0.10), transparent 22%),
-        radial-gradient(circle at top right, rgba(37,99,235,0.08), transparent 20%),
-        linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
-      color: var(--text);
-      line-height: 1.7;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 18px 80px;
-    }
-
-    .hero,
-    .chapter,
-    .result-card {
-      background: var(--panel);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.55);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      padding: 28px;
-      margin-bottom: 22px;
-    }
-
-    .hero {
-      background:
-        radial-gradient(circle at top right, rgba(212,175,55,0.24), transparent 26%),
-        linear-gradient(135deg, #0f172a 0%, #162033 48%, #1e293b 100%);
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.03) 40%, transparent 80%);
-      pointer-events: none;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-soft));
-      color: #111827;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      padding: 8px 12px;
-      border-radius: 999px;
-      margin-bottom: 14px;
-      box-shadow: 0 8px 18px rgba(212,175,55,0.18);
-    }
-
-    h1 {
-      margin: 0 0 12px;
-      font-size: 38px;
-      line-height: 1.2;
-      letter-spacing: -0.03em;
-    }
-
-    h2 {
-      margin: 0 0 10px;
-      font-size: 25px;
-      letter-spacing: -0.02em;
-    }
-
-    h3 {
-      margin: 0 0 10px;
-      font-size: 20px;
-      letter-spacing: -0.01em;
-    }
-
-    .hero .sub {
-      color: rgba(255,255,255,0.84);
-      margin: 0 0 20px;
-      max-width: 800px;
-      font-size: 15px;
-    }
-
-    .progress-wrap {
-      margin-top: 18px;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 14px;
-      color: rgba(255,255,255,0.82);
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 14px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--gold), #f8e6aa);
-      transition: width 0.25s ease;
-      box-shadow: 0 0 24px rgba(212,175,55,0.42);
-    }
-
-    .chapter {
-      background: rgba(255,255,255,0.94);
-    }
-
-    .chapter-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .chapter-header h2 {
-      margin-bottom: 0;
-    }
-
-    .chapter-tag {
-      font-size: 12px;
-      font-weight: 700;
-      color: #8a6a00;
-      background: rgba(212,175,55,0.14);
-      padding: 6px 10px;
-      border-radius: 999px;
-    }
-
-    .chapter-sub {
-      color: var(--text-soft);
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .question {
-      padding: 18px 0;
-      border-top: 1px solid #e8eef6;
-    }
-
-    .question:first-child {
-      border-top: none;
-    }
-
-    .question-title {
-      font-weight: 800;
-      margin-bottom: 13px;
-      color: #0f172a;
-      font-size: 16px;
-      letter-spacing: -0.01em;
-    }
-
-    .options {
-      display: grid;
-      gap: 10px;
-    }
-
-    .option {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      border: 1px solid #dbe4ee;
-      border-radius: 16px;
-      padding: 14px 15px;
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      cursor: pointer;
-      transition: all 0.18s ease;
-      box-shadow: 0 2px 8px rgba(15,23,42,0.03);
-    }
-
-    .option:hover {
-      transform: translateY(-1px);
-      border-color: #c8d3df;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
-    }
-
-    .option input {
-      margin-top: 4px;
-      transform: scale(1.05);
-      accent-color: #111827;
-    }
-
-    .option span {
-      color: #0f172a;
-      font-size: 15px;
-    }
-
-    .email-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      background: #fff;
-    }
-
-    .email-input:focus {
-      border-color: #94a3b8;
-      box-shadow: 0 0 0 4px rgba(148,163,184,0.15);
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 24px;
-    }
-
-    button {
-      border: none;
-      border-radius: 16px;
-      padding: 15px 20px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #fff;
-      box-shadow: 0 14px 28px rgba(15,23,42,0.18);
-    }
-
-    .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .result {
-      display: none;
-      margin-top: 28px;
-    }
-
-    .result-top {
-      background:
-        radial-gradient(circle at top right, rgba(212,175,55,0.10), transparent 28%),
-        linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-    }
-
-    .result-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #8a6a00;
-      background: rgba(212,175,55,0.12);
-      border-radius: 999px;
-      padding: 6px 10px;
-      margin-bottom: 14px;
-    }
-
-    .result-type {
-      font-size: 30px;
-      font-weight: 900;
-      margin: 0 0 10px;
-      color: #0f172a;
-      letter-spacing: -0.03em;
-    }
-
-    .result-summary {
-      font-size: 16px;
-      color: #334155;
-      margin: 0;
-    }
-
-    .grid3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin: 22px 0;
-    }
-
-    .issue-title {
-      font-weight: 900;
-      color: #0f172a;
-      margin-bottom: 10px;
-      font-size: 19px;
-      letter-spacing: -0.01em;
-    }
-
-    .issue-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 800;
-      color: #64748b;
-      background: #f1f5f9;
-      padding: 5px 8px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-
-    ul, ol {
-      padding-left: 20px;
-      margin: 8px 0 0;
-    }
-
-    li {
-      margin-bottom: 8px;
-      color: #334155;
-    }
-
-    .affiliate-card {
-      border: 1px solid rgba(191,0,0,0.08);
-      background:
-        radial-gradient(circle at top right, rgba(191,0,0,0.06), transparent 24%),
-        linear-gradient(180deg, #fff 0%, #fff8f8 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .affiliate-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
-      pointer-events: none;
-    }
-
-    .affiliate-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #b30000;
-      background: rgba(179,0,0,0.08);
-      padding: 6px 10px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-
-    .affiliate-title {
-      font-size: 28px;
-      font-weight: 900;
-      margin: 0 0 10px;
-      line-height: 1.25;
-      color: #111827;
-      letter-spacing: -0.03em;
-    }
-
-    .affiliate-text {
-      font-size: 16px;
-      color: #334155;
-      margin: 0 0 14px;
-      max-width: 820px;
-    }
-
-    .affiliate-button {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 16px 24px;
-      background: linear-gradient(135deg, var(--red), var(--red-strong));
-      color: #fff;
-      text-decoration: none;
-      border-radius: 16px;
-      font-weight: 900;
-      font-size: 16px;
-      box-shadow: 0 18px 30px rgba(179,0,0,0.20);
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
-    }
-
-    .affiliate-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 22px 34px rgba(179,0,0,0.24);
-    }
-
-    .affiliate-sub {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #64748b;
-    }
-
-    .result-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(15,23,42,0.10), transparent);
-      margin: 20px 0;
-    }
-
-    @media (max-width: 900px) {
-      .grid3 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 16px; }
-      h1 { font-size: 29px; }
-      h2 { font-size: 22px; }
-      .hero, .chapter, .result-card { padding: 22px; }
-      .actions { flex-direction: column; }
-      button { width: 100%; }
-      .affiliate-button { width: 100%; text-align: center; }
-      .result-type { font-size: 24px; }
-      .affiliate-title { font-size: 23px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <section class="hero">
-      <span class="badge">PREMIUM GOLF ANALYSIS</span>
-      <h1>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</h1>
-      <p class="sub">
-        50の質問から、あなたのゴルフ傾向を多角的に分析します。スイング、ショートゲーム、パッティング、
-        メンタル、コースマネジメントまで可視化し、最適な練習プランと今のあなたに合うおすすめクラブを提示します。
-      </p>
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span>回答進捗</span>
-          <strong id="progressText">0 / 50</strong>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-      </div>
-    </section>
-
-    <form id="quizForm">
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第1章：現状とプレースタイル</h2>
-          <span class="chapter-tag">FOUNDATION</span>
-        </div>
-        <p class="chapter-sub">現状把握・再現性・基礎体力・自己認識をチェックします。</p>
-        <div id="chapter1"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第2章：ドライビング＆フルスイング（物理と軌道の解析）</h2>
-          <span class="chapter-tag">FULL SWING</span>
-        </div>
-        <p class="chapter-sub">軌道、インパクト、バランス、傾斜対応まで確認します。</p>
-        <div id="chapter2"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第3章：アプローチ＆バンカー（ショートゲームの精度）</h2>
-          <span class="chapter-tag">SHORT GAME</span>
-        </div>
-        <p class="chapter-sub">寄せ・バンカー・距離感・打ち分けの精度を見ます。</p>
-        <div id="chapter3"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第4章：パッティング（スコアメイクの要）</h2>
-          <span class="chapter-tag">PUTTING</span>
-        </div>
-        <p class="chapter-sub">距離感、ショートパット、打ち出し、ライン読みの傾向を分析します。</p>
-        <div id="chapter4"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第5章：コースマネジメント・メンタル戦略</h2>
-          <span class="chapter-tag">STRATEGY & MIND</span>
-        </div>
-        <p class="chapter-sub">判断力・感情コントロール・スコアメイクの思考をチェックします。</p>
-        <div id="chapter5"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>診断結果をメールで受け取る</h2>
-          <span class="chapter-tag">OPTIONAL</span>
-        </div>
-        <p class="chapter-sub">今は入力欄のみです。次にメール自動送信機能を追加できます。</p>
-        <div class="question">
-          <div class="question-title">メールアドレス</div>
-          <input
-            type="email"
-            id="email"
-            class="email-input"
-            placeholder="example@email.com"
-          />
-        </div>
-      </section>
-
-      <div class="actions">
-        <button type="button" class="btn-secondary" id="resetBtn">リセット</button>
-        <button type="submit" class="btn-primary">診断結果を見る</button>
-      </div>
-    </form>
-
-    <section class="result" id="resultSection">
-      <div class="result-card result-top">
-        <div class="result-label">RESULT PROFILE</div>
-        <p class="result-type">あなたのタイプ：<span id="profileType"></span></p>
-        <p class="result-summary" id="profileMessage"></p>
-      </div>
-
-      <div class="grid3">
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 01</div>
-          <h3>課題①</h3>
-          <div class="issue-title" id="issue1"></div>
-          <ul id="issue1Actions"></ul>
-        </div>
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 02</div>
-          <h3>課題②</h3>
-          <div class="issue-title" id="issue2"></div>
-          <ul id="issue2Actions"></ul>
-        </div>
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 03</div>
-          <h3>課題③</h3>
-          <div class="issue-title" id="issue3"></div>
-          <ul id="issue3Actions"></ul>
-        </div>
-      </div>
-
-      <div class="result-card">
-        <h3>おすすめ練習プラン</h3>
-        <ol id="trainingPlan"></ol>
-      </div>
-
-      <div class="result-card affiliate-card" id="affiliateCard">
-        <div class="affiliate-eyebrow">RECOMMENDED CLUB</div>
-        <h3 class="affiliate-title" id="affiliateTitle"></h3>
-        <p class="affiliate-text" id="affiliateText"></p>
-        <a
-          id="affiliateLink"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="affiliate-button"
-        >あなたに合うクラブを今すぐ確認する</a>
-        <div class="affiliate-sub">診断タイプとの相性を踏まえて、最初の1本として選びやすいモデルを表示しています。</div>
-      </div>
-    </section>
-  </div>
-
-  <script>
-    const sections = [
+import React, { useMemo, useState } from "react";
+import {
+  Target,
+  Shield,
+  Zap,
+  Wind,
+  BrainCircuit,
+  Map,
+  Flag,
+  AlertTriangle,
+  ChevronRight,
+  Info,
+  BarChart3,
+  Crosshair,
+  Unlock,
+  CheckCircle2,
+  TrendingUp,
+  Gauge,
+  Swords,
+  Trophy,
+  RotateCcw,
+  Mail,
+  Star,
+} from "lucide-react";
+
+/* =========================================================
+   1) 6タイプ定義
+========================================================= */
+const PLAYER_TYPES = [
+  {
+    id: "AGGRESSIVE",
+    name: "アグレッシブ",
+    icon: Zap,
+    desc: "飛距離重視。ピンをデッドに狙う攻撃型。",
+    summary:
+      "攻め志向が強く、流れに乗ると一気にスコアを縮めます。一方で、無理な狙いと力みから大叩きが出やすいタイプです。",
+    color: "from-rose-500 to-orange-500",
+  },
+  {
+    id: "STEADY",
+    name: "ステディ",
+    icon: Shield,
+    desc: "方向性重視。安全運転で崩れにくい安定型。",
+    summary:
+      "堅実で大崩れしにくく、スコアの土台を作れるタイプです。守りすぎるとチャンスを逃すので、攻め所の見極めが伸びしろです。",
+    color: "from-emerald-500 to-teal-500",
+  },
+  {
+    id: "TECHNICAL",
+    name: "テクニカル",
+    icon: Target,
+    desc: "理論派。球筋や戦略を組み立てる分析型。",
+    summary:
+      "状況判断や改善意識が高く、再現性を作れるタイプです。考えすぎると振れなくなるため、実戦ではシンプルさが鍵です。",
+    color: "from-sky-500 to-blue-600",
+  },
+  {
+    id: "FEEL",
+    name: "フィーリング",
+    icon: Wind,
+    desc: "感覚重視。流れとリズムでプレーする感覚型。",
+    summary:
+      "フィーリングが合う日は強く、タッチや雰囲気でスコアを作れるタイプです。基準値を持つと安定感が一気に増します。",
+    color: "from-violet-500 to-fuchsia-500",
+  },
+  {
+    id: "POWER",
+    name: "パワー",
+    icon: Swords,
+    desc: "飛距離武器。多少のミスを押し切る出力型。",
+    summary:
+      "ヘッドスピードや飛距離に強みがあり、ロングホールで優位に立てるタイプです。縦距離と方向性を整えると一段上へ行けます。",
+    color: "from-amber-500 to-yellow-500",
+  },
+  {
+    id: "MENTAL",
+    name: "メンタル敏感",
+    icon: BrainCircuit,
+    desc: "技術より流れに左右されやすい繊細型。",
+    summary:
+      "技術は十分でも、ミス後の引きずりやプレッシャーで本来の力を出し切れないタイプです。ルーティン化で大きく変わります。",
+    color: "from-slate-600 to-slate-800",
+  },
+];
+
+/* =========================================================
+   2) コースデータ
+========================================================= */
+const COURSES = [
+  {
+    id: "otsu",
+    name: "大津カントリークラブ 東コース",
+    description:
+      "27ホール（南郷・天ヶ瀬・石山）。広く見えるが、長い2打目と地形で削られる戦略型コース。",
+    stats: {
+      avgScore: "94.2",
+      fwKeep: "62%",
+      parOn: "28%",
+      key: "長い2打目精度",
+    },
+    essence:
+      "広い見た目に油断しやすい一方、距離と地形がじわじわ効いてきます。ティーショットだけでなく、セカンド・サードの残距離管理がスコア差を生みます。",
+    holes: [
       {
-        target: "chapter1",
-        questions: [
-          { id: 1, text: "現在の平均スコアは？", options: [
-            { label: "110以上", score: { fundamentals: 2 } },
-            { label: "100〜109", score: { fundamentals: 1 } },
-            { label: "90〜99", score: { fundamentals: 0.5 } },
-            { label: "89以下", score: { fundamentals: 0 } }
-          ]},
-          { id: 2, text: "最もスコアを崩している原因は何だと感じますか？", options: [
-            { label: "ティーショットの乱れ", score: { swing: 2 } },
-            { label: "アイアンのダフリ・トップ", score: { swing: 2 } },
-            { label: "アプローチ・パター", score: { shortGame: 1, putting: 1 } }
-          ]},
-          { id: 3, text: "ゴルフの練習（打ちっぱなし等）は月に何回行きますか？", options: [
-            { label: "0〜1回", score: { fundamentals: 2 } },
-            { label: "2〜4回", score: { fundamentals: 1 } },
-            { label: "5回以上", score: { fundamentals: 0 } }
-          ]},
-          { id: 4, text: "自分のスイングを動画撮影して客観的にチェックしていますか？", options: [
-            { label: "はい", score: { fundamentals: 0, technical: 1 } },
-            { label: "いいえ", score: { fundamentals: 2 } },
-            { label: "たまにする", score: { fundamentals: 1 } }
-          ]},
-          { id: 5, text: "スイング中、最も力みを感じる部位はどこですか？", options: [
-            { label: "グリップ・腕", score: { mental: 1, swing: 1 } },
-            { label: "肩・上半身", score: { mental: 1, swing: 1 } },
-            { label: "特に力みはない", score: { mental: 0 } }
-          ]},
-          { id: 6, text: "自分の各番手の『キャリー（落下点までの距離）』を正確に把握していますか？", options: [
-            { label: "はい", score: { fundamentals: 0, management: 0 } },
-            { label: "いいえ", score: { fundamentals: 2, management: 1 } },
-            { label: "大体わかる", score: { fundamentals: 1, management: 0.5 } }
-          ]},
-          { id: 7, text: "クラブのセッティングは自分の力に合っていると感じますか？", options: [
-            { label: "はい", score: { fundamentals: 0 } },
-            { label: "いいえ", score: { fundamentals: 2, swing: 1 } },
-            { label: "わからない", score: { fundamentals: 1.5 } }
-          ]},
-          { id: 8, text: "ラウンド前、ストレッチに10分以上時間をかけていますか？", options: [
-            { label: "はい", score: { fitness: 0 } },
-            { label: "いいえ", score: { fitness: 2 } }
-          ]},
-          { id: 9, text: "ラウンド後半（残り4ホール）で、下半身の疲れやスイングの乱れを感じますか？", options: [
-            { label: "はい", score: { fitness: 2 } },
-            { label: "いいえ", score: { fitness: 0 } }
-          ]},
-          { id: 10, text: "ミスショット直後、すぐに原因を自己分析できますか？", options: [
-            { label: "できる", score: { fundamentals: 0, technical: 1 } },
-            { label: "感情的になってしまう", score: { mental: 2 } },
-            { label: "わからない", score: { fundamentals: 1.5 } }
-          ]}
-        ]
+        name: "南郷6番",
+        tags: ["Par5", "511y", "HCP 2"],
+        strategy:
+          "無理な2オン狙いより、3打目を得意距離に残す逆算設計が有効。100y前後のウェッジ勝負へ持ち込む意識が重要です。",
       },
       {
-        target: "chapter2",
-        questions: [
-          { id: 11, text: "ドライバーで一番多い致命的なミスは？", options: [
-            { label: "スライス/右プッシュ", score: { swing: 2 } },
-            { label: "フック/左引っかけ", score: { swing: 2 } },
-            { label: "テンプラ/チョロ", score: { swing: 2, fundamentals: 1 } }
-          ]},
-          { id: 12, text: "フィニッシュの姿勢で、バランスよく3秒間ピタッと止まれますか？", options: [
-            { label: "はい", score: { swing: 0, fitness: 0 } },
-            { label: "いいえ", score: { swing: 1.5, fitness: 1 } },
-            { label: "時々止まれる", score: { swing: 1, fitness: 0.5 } }
-          ]},
-          { id: 13, text: "ダウンスイングの切り返しは、どこから動かしていますか？", options: [
-            { label: "腕・手元から", score: { swing: 2 } },
-            { label: "腰・下半身から", score: { swing: 0 } },
-            { label: "意識していない", score: { swing: 1.5 } }
-          ]},
-          { id: 14, text: "自分のスイング軌道（アウトサイドイン等）を理解していますか？", options: [
-            { label: "はい", score: { swing: 0, technical: 1 } },
-            { label: "いいえ", score: { swing: 2 } }
-          ]},
-          { id: 15, text: "アイアンを打った後、ボールの先の芝（ターフ）が取れますか？", options: [
-            { label: "手前をダフる", score: { swing: 2 } },
-            { label: "先が綺麗に取れる", score: { swing: 0 } },
-            { label: "払い打ちで取らない", score: { swing: 1 } }
-          ]},
-          { id: 16, text: "アドレス時、右肩が左肩よりも前に出ている感覚はありますか？", options: [
-            { label: "はい", score: { swing: 1.5 } },
-            { label: "いいえ", score: { swing: 0 } }
-          ]},
-          { id: 17, text: "スイング中、頭が大きく動いている（スウェー）と言われますか？", options: [
-            { label: "はい", score: { swing: 2, fitness: 0.5 } },
-            { label: "いいえ", score: { swing: 0 } }
-          ]},
-          { id: 18, text: "クラブの芯でボールを捉える確率はどれくらいですか？", options: [
-            { label: "30%以下", score: { swing: 2 } },
-            { label: "30〜70%", score: { swing: 1 } },
-            { label: "70%以上", score: { swing: 0 } }
-          ]},
-          { id: 19, text: "傾斜地（つま先上がり等）での打ち方のセオリーを理解していますか？", options: [
-            { label: "はい", score: { management: 0, fundamentals: 0 } },
-            { label: "いいえ", score: { management: 1.5, fundamentals: 1 } },
-            { label: "少しわかる", score: { management: 1 } }
-          ]},
-          { id: 20, text: "フェアウェイウッドはコースで自信を持って使えますか？", options: [
-            { label: "はい", score: { swing: 0 } },
-            { label: "いいえ", score: { swing: 1.5 } },
-            { label: "使わない", score: { swing: 1, management: 0.5 } }
-          ]}
-        ]
+        name: "天ヶ瀬1番",
+        tags: ["Par5", "462y", "HCP 5"],
+        strategy:
+          "真っ直ぐに見えても、まずはセンター確保。寄せワンを取りやすい落とし所を先に決めることで、ボギー先行を防げます。",
       },
       {
-        target: "chapter3",
-        questions: [
-          { id: 21, text: "グリーン周り（残り30y）から、平均何打で上がれますか？", options: [
-            { label: "4打以上", score: { shortGame: 2, putting: 0.5 } },
-            { label: "3打", score: { shortGame: 1 } },
-            { label: "2打", score: { shortGame: 0 } }
-          ]},
-          { id: 22, text: "アプローチでの一番のミスは？", options: [
-            { label: "ザックリ・ダフリ", score: { shortGame: 2 } },
-            { label: "トップ・ホームラン", score: { shortGame: 2 } },
-            { label: "距離感のミス", score: { shortGame: 1.5 } }
-          ]},
-          { id: 23, text: "アプローチを打つ際、体重移動はしていますか？", options: [
-            { label: "はい", score: { shortGame: 1.5 } },
-            { label: "いいえ[左足体重固定]", score: { shortGame: 0 } }
-          ]},
-          { id: 24, text: "状況に応じて、上げて転がす・転がすを打ち分けていますか？", options: [
-            { label: "はい", score: { shortGame: 0, management: 0 } },
-            { label: "いいえ", score: { shortGame: 1.5, management: 0.5 } },
-            { label: "いつも同じ打ち方", score: { shortGame: 2, management: 0.5 } }
-          ]},
-          { id: 25, text: "アプローチの距離感は『振り幅の基準』で決めていますか？", options: [
-            { label: "はい", score: { shortGame: 0, technical: 1 } },
-            { label: "いいえ[感覚で打つ]", score: { shortGame: 1.5 } }
-          ]},
-          { id: 26, text: "バンカーは1発で脱出できる確率が70%以上ありますか？", options: [
-            { label: "はい", score: { shortGame: 0 } },
-            { label: "いいえ", score: { shortGame: 2 } }
-          ]},
-          { id: 27, text: "バンカーショットの際、フェースを開いて構えることができますか？", options: [
-            { label: "はい", score: { shortGame: 0 } },
-            { label: "いいえ", score: { shortGame: 1.5 } }
-          ]},
-          { id: 28, text: "グリーンエッジから、ウェッジではなくパターを使うことに抵抗はありますか？", options: [
-            { label: "ある", score: { management: 1, shortGame: 1 } },
-            { label: "ない", score: { management: 0, shortGame: 0 } }
-          ]},
-          { id: 29, text: "アプローチのインパクト時、スイングが緩む（減速する）癖はありますか？", options: [
-            { label: "はい", score: { shortGame: 2, mental: 0.5 } },
-            { label: "いいえ", score: { shortGame: 0 } }
-          ]},
-          { id: 30, text: "ウェッジのバンス（ソールの出っ張り）を滑らせて打つ感覚がわかりますか？", options: [
-            { label: "はい", score: { shortGame: 0 } },
-            { label: "いいえ", score: { shortGame: 1.5 } }
-          ]}
-        ]
+        name: "石山8番",
+        tags: ["Par3", "188y", "池越え"],
+        strategy:
+          "ピンではなくグリーン中央狙いが鉄則。届かない番手の事故と、オーバーの両方を避ける番手選びが必要です。",
+      },
+    ],
+  },
+  {
+    id: "nisshin",
+    name: "日清都カントリークラブ",
+    description:
+      "18ホール（醍醐・宇治）。高低差が大きく、見た目と実質距離がズレやすい山岳コース。",
+    stats: {
+      avgScore: "96.5",
+      fwKeep: "45%",
+      parOn: "22%",
+      key: "高低差の距離感",
+    },
+    essence:
+      "打ち上げ・打ち下ろしによって番手選択のズレが起きやすく、距離感の精度が重要です。実質ヤーデージと落とし所の設計が攻略の中心になります。",
+    holes: [
+      {
+        name: "醍醐6番",
+        tags: ["Par5", "551y", "HCP 1"],
+        strategy:
+          "左手前バンカーは避けたい場面。3打目をどこに外すかまで先に決めておくと、無駄な失点を減らせます。",
       },
       {
-        target: "chapter4",
-        questions: [
-          { id: 31, text: "1ラウンドの平均パット数は？", options: [
-            { label: "40以上", score: { putting: 2 } },
-            { label: "36〜39", score: { putting: 1 } },
-            { label: "35以下", score: { putting: 0 } }
-          ]},
-          { id: 32, text: "3パットをしてしまう一番の原因は？", options: [
-            { label: "1打目の距離感エラー", score: { putting: 1.5 } },
-            { label: "短いパットを外す", score: { putting: 1.5, mental: 0.5 } }
-          ]},
-          { id: 33, text: "上りと下りのライン、どちらが苦手ですか？", options: [
-            { label: "上り", score: { putting: 1 } },
-            { label: "下り", score: { putting: 1.5 } },
-            { label: "どちらも苦手", score: { putting: 2 } }
-          ]},
-          { id: 34, text: "1mのパットを打つ際、カップの音を聞くまで顔を残せていますか？", options: [
-            { label: "はい", score: { putting: 0 } },
-            { label: "いいえ[すぐ顔が上がる]", score: { putting: 1.5 } }
-          ]},
-          { id: 35, text: "ストローク中、手首の角度が折れたり動いたりしてしまいますか？", options: [
-            { label: "はい", score: { putting: 1.5 } },
-            { label: "いいえ[固定できている]", score: { putting: 0 } }
-          ]},
-          { id: 36, text: "ラインを読む際、ボールの後方以外（横やカップ側）からも確認しますか？", options: [
-            { label: "はい", score: { putting: 0, technical: 1 } },
-            { label: "いいえ", score: { putting: 1 } }
-          ]},
-          { id: 37, text: "パター専用のグリップ（握り方）をしていますか？", options: [
-            { label: "はい", score: { putting: 0 } },
-            { label: "いいえ[ショットと同じ]", score: { putting: 1 } }
-          ]},
-          { id: 38, text: "ラウンド前の練習で、その日の『基準となる振り幅の距離』を測っていますか？", options: [
-            { label: "はい", score: { putting: 0, fundamentals: 0 } },
-            { label: "いいえ", score: { putting: 1.5, fundamentals: 0.5 } }
-          ]},
-          { id: 39, text: "常にパターの芯（スイートスポット）で打つことを意識していますか？", options: [
-            { label: "はい", score: { putting: 0 } },
-            { label: "いいえ", score: { putting: 1 } }
-          ]},
-          { id: 40, text: "ボールのライン（線）をターゲットに毎回合わせてセットしていますか？", options: [
-            { label: "はい", score: { putting: 0 } },
-            { label: "いいえ", score: { putting: 1 } },
-            { label: "線は引いていない", score: { putting: 1.5 } }
-          ]}
-        ]
+        name: "宇治14番",
+        tags: ["Par4", "438y", "HCP 2"],
+        strategy:
+          "真っ直ぐでも置き所が重要。右へ外すと角度と足場で大きく損をするため、ティーショットの狙い所が鍵です。",
       },
       {
-        target: "chapter5",
-        questions: [
-          { id: 41, text: "打つ前、ハザード（池やバンカー）を『避けるターゲット』として設定していますか？", options: [
-            { label: "はい", score: { management: 0 } },
-            { label: "いいえ[ピンしか見ない]", score: { management: 1.5 } }
-          ]},
-          { id: 42, text: "ティーショットをミスした後、無理にグリーンを狙ってしまいますか？", options: [
-            { label: "はい", score: { management: 2, mental: 0.5 } },
-            { label: "いいえ[確実に刻む]", score: { management: 0 } }
-          ]},
-          { id: 43, text: "自分の『得意な距離』を残すように、逆算してレイアップ（刻む）できますか？", options: [
-            { label: "はい", score: { management: 0 } },
-            { label: "いいえ", score: { management: 1.5, fundamentals: 0.5 } }
-          ]},
-          { id: 44, text: "朝イチのティーショットや人が見ている場面で、スインリズムが早くなりますか？", options: [
-            { label: "はい", score: { mental: 2 } },
-            { label: "いいえ", score: { mental: 0 } }
-          ]},
-          { id: 45, text: "打つ前のプレショット・ルーティンを、毎回同じリズムで行っていますか？", options: [
-            { label: "はい", score: { mental: 0, management: 0 } },
-            { label: "いいえ", score: { mental: 1.5 } }
-          ]},
-          { id: 46, text: "風向きや高低差をしっかり計算して番手を選んでいますか？", options: [
-            { label: "はい", score: { management: 0 } },
-            { label: "いいえ", score: { management: 1.5 } },
-            { label: "大体で選ぶ", score: { management: 1 } }
-          ]},
-          { id: 47, text: "大叩きした後、次のホールまで気分を引きずってしまいますか？", options: [
-            { label: "はい", score: { mental: 2 } },
-            { label: "いいえ[すぐ切り替えられる]", score: { mental: 0 } }
-          ]},
-          { id: 48, text: "セカンドショットを打つ際、ピンの位置（手前・奥）を考慮して『外しても安全な場所』をあらかじめ決めてから打っていますか？", options: [
-            { label: "はい", score: { management: 0 } },
-            { label: "いいえ[常にピンを狙う]", score: { management: 1.5 } }
-          ]},
-          { id: 49, text: "林の中などのトラブル時、わずかな隙間を狙うよりも、まずはフェアウェイに確実に出す（横や後ろに出す）冷静な選択ができますか？", options: [
-            { label: "はい", score: { management: 0, mental: 0 } },
-            { label: "いいえ[つい前を狙ってしまう]", score: { management: 2, mental: 0.5 } }
-          ]},
-          { id: 50, text: "ラウンド中、自分のトータルスコア（現在何オーバーか等）を常に計算してしまい、それがプレッシャーに繋がるタイプですか？", options: [
-            { label: "はい", score: { mental: 2 } },
-            { label: "いいえ[目の前の1打に集中している]", score: { mental: 0 } }
-          ]}
-        ]
-      }
-    ];
+        name: "宇治12番",
+        tags: ["Par5", "569y", "打ち下ろし"],
+        strategy:
+          "飛距離より次打のライの良さを優先。平坦な場所を残すことで、結果として平均スコアが安定します。",
+      },
+    ],
+  },
+  {
+    id: "ujitawara",
+    name: "宇治田原カントリー倶楽部",
+    description:
+      "27ホール（嘉納・大杉・大福）。大型グリーンと多彩なレイアウトが特徴。",
+    stats: {
+      avgScore: "93.8",
+      fwKeep: "50%",
+      putts: "36.5",
+      key: "3パット回避",
+    },
+    essence:
+      "広く見えても谷越え・池越え・ドッグレッグがあり、油断すると失点します。大型グリーンゆえ、乗せた後の距離感と3パット回避が重要です。",
+    holes: [
+      {
+        name: "嘉納2番",
+        tags: ["Par5", "545y", "右ドッグ"],
+        strategy:
+          "ショートカットより3打目の角度を良くする設計が有効。寄せやすいラインを残すことを優先してください。",
+      },
+      {
+        name: "嘉納5番",
+        tags: ["Par4", "池越え"],
+        strategy:
+          "池の最短線ではなく、視界から池が消えるサイドを狙うことで、プレッシャーを下げて再現性を確保できます。",
+      },
+      {
+        name: "大福2番",
+        tags: ["Par4", "最難関", "右ドッグ"],
+        strategy:
+          "ドライバー固定は危険。3WやUTで置きにいき、次打の角度を作るほうがトータルでは有利です。",
+      },
+    ],
+  },
+];
 
-    const affiliateLinks = {
-      aggressive: {
-        title: "AGGRESSIVEタイプにおすすめの1本",
-        text: "スライスや右へのミスを減らしたい方には、つかまりやすく直進性の高いドライバーがおすすめです。",
-        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa5e79.a1ce0955.51fa5e7a.66ada583/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolffujico%2Ftm-dr-sim2ms%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
-      },
-      steady: {
-        title: "STEADYタイプにおすすめの1本",
-        text: "安定感をさらに高めたい方には、ミスに強く球が上がりやすいユーティリティがおすすめです。",
-        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa650e.03d1097e.51fa650f.70d909ab/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcallawaygolf%2Fbp_007143_el4c%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
-      },
-      feel: {
-        title: "FEELタイプにおすすめの1本",
-        text: "距離感やタッチを改善したい方には、フィーリングを出しやすいパターがおすすめです。",
-        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa675d.19d21a30.51fa675e.9951aad8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolfpartner-2%2Fodyssey-putter-049%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
-      },
-      technical: {
-        title: "TECHNICALタイプにおすすめの1本",
-        text: "再現性を高めたい方には、シンプルで直進性の高いピン型パターがおすすめです。",
-        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa6f36.5f20f680.51fa6f37.91c34ab9/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Feirigoods%2Fgef-05%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
-      }
-    };
+/* =========================================================
+   3) タイプ別禁止事項
+========================================================= */
+const TYPE_PROHIBITIONS = {
+  AGGRESSIVE: "無理な2オン狙い・谷越えショートカットの禁止",
+  STEADY: "守りすぎて長い番手を残しすぎる判断の禁止",
+  TECHNICAL: "考えすぎて打てなくなる状態の禁止",
+  FEEL: "感覚だけで番手を決めることの禁止",
+  POWER: "飛ぶから大丈夫という雑なマネジメントの禁止",
+  MENTAL: "ミス1発で流れを崩すセルフ崩壊の禁止",
+};
 
-    const recommendations = {
-      fundamentals: {
-        name: "基礎・現状把握",
-        actions: [
-          "各番手のキャリーを記録し、飛距離表を作る",
-          "週1回スイング動画を撮影する",
-          "ミスの傾向を練習メモに残す"
-        ]
-      },
-      swing: {
-        name: "フルスイング",
-        actions: [
-          "ハーフスイングでミート率重視の練習を行う",
-          "フィニッシュ3秒停止ドリルを行う",
-          "下半身主導の切り返しを意識する"
-        ]
-      },
-      shortGame: {
-        name: "アプローチ・バンカー",
-        actions: [
-          "10y・20y・30yの振り幅基準を作る",
-          "左足体重固定のアプローチ練習を行う",
-          "バンカーはフェースを開く練習を増やす"
-        ]
-      },
-      putting: {
-        name: "パッティング",
-        actions: [
-          "1mのショートパット反復",
-          "5m・8m・10mの距離感合わせ",
-          "毎回同じ打ち出し方向を作る"
-        ]
-      },
-      mental: {
-        name: "メンタル",
-        actions: [
-          "ミス後の切り替えルーティンを作る",
-          "打つ前の呼吸を一定にする",
-          "スコアではなく次の1打に集中する"
-        ]
-      },
-      management: {
-        name: "コースマネジメント",
-        actions: [
-          "危険エリアを先に外す判断を徹底する",
-          "得意距離を残すレイアップを覚える",
-          "トラブル時は無理に前へ出さない"
-        ]
-      },
-      fitness: {
-        name: "体力・再現性",
-        actions: [
-          "ラウンド前に10分の動的ストレッチ",
-          "下半身の安定性トレーニングを行う",
-          "後半を想定した連続素振りを行う"
-        ]
-      }
-    };
+/* =========================================================
+   4) 評価カテゴリ
+========================================================= */
+const CATEGORY_INFO = {
+  fundamentals: {
+    name: "基礎・現状把握",
+    actions: [
+      "各番手のキャリーを測り、飛距離表を作る",
+      "週1回スイング動画を撮影して比較する",
+      "練習後にミス傾向を3行だけ記録する",
+    ],
+  },
+  swing: {
+    name: "フルスイング",
+    actions: [
+      "ハーフスイングで芯に当てる練習を増やす",
+      "フィニッシュ3秒停止ドリルを行う",
+      "切り返しは下半身主導を意識する",
+    ],
+  },
+  shortGame: {
+    name: "アプローチ・バンカー",
+    actions: [
+      "10y・20y・30yの振り幅基準を作る",
+      "左足体重固定の寄せ練習を繰り返す",
+      "バンカーはフェースを開く動作を反復する",
+    ],
+  },
+  putting: {
+    name: "パッティング",
+    actions: [
+      "1mのショートパットを20球連続で打つ",
+      "5m・8m・10mの距離感を毎回合わせる",
+      "打ち出し方向を一定にする練習を行う",
+    ],
+  },
+  mental: {
+    name: "メンタル",
+    actions: [
+      "ミス後の切り替えルーティンを作る",
+      "打つ前の呼吸を一定にする",
+      "スコアではなく次の1打だけに集中する",
+    ],
+  },
+  management: {
+    name: "コースマネジメント",
+    actions: [
+      "危険エリアを先に消す判断を徹底する",
+      "得意距離を残すレイアップを覚える",
+      "トラブル時は前より安全第一で出す",
+    ],
+  },
+  fitness: {
+    name: "体力・再現性",
+    actions: [
+      "ラウンド前に10分の動的ストレッチを行う",
+      "下半身安定トレーニングを週2回行う",
+      "後半を想定した連続素振りを取り入れる",
+    ],
+  },
+  technical: {
+    name: "理論・分析",
+    actions: [
+      "球筋と出球方向を毎回メモする",
+      "スイングの修正点は1回に1つだけに絞る",
+      "ラウンド前にコース戦略を言語化する",
+    ],
+  },
+  power: {
+    name: "飛距離コントロール",
+    actions: [
+      "フルショットと80%ショットの飛距離差を測る",
+      "ドライバー以外のティーショットを増やす",
+      "飛ばすより置く練習を取り入れる",
+    ],
+  },
+  pressure: {
+    name: "プレッシャー耐性",
+    actions: [
+      "1球勝負形式の練習を増やす",
+      "朝イチ想定でルーティンを固定する",
+      "見られている場面を想定して打つ",
+    ],
+  },
+};
 
-    const profileMessages = {
-      aggressive: "攻め志向が強く、ハマるとスコアが出やすい反面、無理な判断で崩れやすいタイプです。",
-      steady: "堅実志向で大崩れしにくいタイプです。再現性を高めるとさらに安定します。",
-      feel: "感覚派で流れに乗ると強いタイプです。基準作りを行うと安定感が増します。",
-      technical: "理論派で改善意識が高いタイプです。考えすぎず反復で固めるのが有効です。"
-    };
+/* =========================================================
+   5) アフィリエイト推薦
+========================================================= */
+const AFFILIATE_RECOMMENDATIONS = {
+  AGGRESSIVE: {
+    title: "アグレッシブタイプにおすすめの1本",
+    text: "つかまりやすく直進性が高いドライバーや、ティーショットを安定させる3W/5Wが相性良好です。",
+    url: "https://example.com/aggressive-club",
+    product: "直進性重視のドライバー / 5W",
+  },
+  STEADY: {
+    title: "ステディタイプにおすすめの1本",
+    text: "ミスに強く球が上がりやすいユーティリティや、やさしいフェアウェイウッドがおすすめです。",
+    url: "https://example.com/steady-club",
+    product: "ミスに強いユーティリティ",
+  },
+  TECHNICAL: {
+    title: "テクニカルタイプにおすすめの1本",
+    text: "距離感と操作性を両立しやすいアイアン、またはラインを出しやすいピン型パターが向いています。",
+    url: "https://example.com/technical-club",
+    product: "操作性の高いアイアン / ピン型パター",
+  },
+  FEEL: {
+    title: "フィーリングタイプにおすすめの1本",
+    text: "タッチを出しやすいパターや、顔つきが安心感につながるクラブが相性良好です。",
+    url: "https://example.com/feel-club",
+    product: "タッチ重視のパター",
+  },
+  POWER: {
+    title: "パワータイプにおすすめの1本",
+    text: "スピン量を抑えながら左右のバラつきを軽減できるドライバー、または強弾道のUTがおすすめです。",
+    url: "https://example.com/power-club",
+    product: "低スピン系ドライバー / 強弾道UT",
+  },
+  MENTAL: {
+    title: "メンタル敏感タイプにおすすめの1本",
+    text: "構えた時に安心感があり、ミスに寛容なクラブのほうがスコア安定に直結します。",
+    url: "https://example.com/mental-club",
+    product: "安心感のある大型ヘッドモデル",
+  },
+};
 
-    function renderQuestions() {
-      sections.forEach(section => {
-        const container = document.getElementById(section.target);
-        container.innerHTML = "";
-        section.questions.forEach(q => {
-          const div = document.createElement("div");
-          div.className = "question";
-          div.innerHTML = `
-            <div class="question-title">Q${q.id}. ${q.text}</div>
-            <div class="options">
-              ${q.options.map((opt, i) => `
-                <label class="option">
-                  <input type="radio" name="q${q.id}" value="${i}">
-                  <span>${opt.label}</span>
-                </label>
-              `).join("")}
+/* =========================================================
+   6) コース × タイプ別アドバイス
+========================================================= */
+const COURSE_TYPE_ADVICE = {
+  otsu: {
+    AGGRESSIVE: {
+      title: "広い見た目に騙されず、3打目勝負へ切り替える",
+      desc: "大津東は『振れるように見える』ことで逆に崩れやすいコースです。飛ばすことより、長い2打目を難しくしない置き方が大切です。",
+      action: "ティーショットはフルスイングより、80〜90%でフェアウェイ優先。",
+      keyClub: "5W / ユーティリティ",
+    },
+    STEADY: {
+      title: "あなたの堅実さが最も活きるコース",
+      desc: "無理に2オンを狙わず、3打目を得意距離に揃えることで安定してスコアを作れます。",
+      action: "パー5は最初から3打目地点を先に決めておく。",
+      keyClub: "得意なウェッジ",
+    },
+    TECHNICAL: {
+      title: "石山の地形と距離の罠を読む",
+      desc: "大津東は球筋より『どこへ外すか』の設計が重要です。パー3と長いミドルで冷静さが問われます。",
+      action: "グリーンを4分割し、最も安全なエリアを毎回決める。",
+      keyClub: "ミドルアイアン",
+    },
+    FEEL: {
+      title: "視覚の広さに流されないこと",
+      desc: "広い景色でテンポが速くなりやすいので、素振りと足裏感覚で落ち着いてから打つことが重要です。",
+      action: "素振り前に傾斜と落とし所を3秒確認する。",
+      keyClub: "ショートアイアン",
+    },
+    POWER: {
+      title: "飛距離を武器にしつつ、置き所を絞る",
+      desc: "大津東では飛ばせるほど2打目が雑になりやすいです。飛距離の優位を、無理な狙いではなく優位な残距離作りに使ってください。",
+      action: "ドライバーは『飛ばす』より『次打をフルショットできる場所へ』。",
+      keyClub: "ミニドライバー / 3W",
+    },
+    MENTAL: {
+      title: "長いホールで焦らないことが最優先",
+      desc: "大津東は一度のミスで慌てると連続ミスが出やすい設計です。刻む勇気がそのままスコアになります。",
+      action: "ミス後は次打の目標を10秒で言語化してから構える。",
+      keyClub: "安心して振れるUT",
+    },
+  },
+  nisshin: {
+    AGGRESSIVE: {
+      title: "打ち下ろしの『いけそう』を封じる",
+      desc: "高低差で気持ちが前に出やすく、狙いすぎると奥や左右に外しやすいコースです。",
+      action: "迷ったら1番手下げてコンパクトに振る。",
+      keyClub: "ショートアイアン / ウェッジ",
+    },
+    STEADY: {
+      title: "実質ヤーデージを愚直に信じる",
+      desc: "このコースは見た目より実質距離が重要です。あなたの安定感と相性が良いので、距離計の数字を信じて安全サイドで戦いましょう。",
+      action: "打ち上げは大きめ番手を短く持って振る。",
+      keyClub: "ショートウッド / UT",
+    },
+    TECHNICAL: {
+      title: "高低差と落下角の計算が武器になる",
+      desc: "グリーン奥へ外すと苦しくなりやすいコースです。手前から攻める設計が合理的です。",
+      action: "エッジに落として転がすイメージで番手選択する。",
+      keyClub: "スピンの効くウェッジ",
+    },
+    FEEL: {
+      title: "風と景色に飲まれないリズム作り",
+      desc: "高台ならではの風と高低差の錯覚でテンポが乱れやすいです。イメージを先に作るとミスが減ります。",
+      action: "打つ前に最高点から落ちる弾道を頭の中で描く。",
+      keyClub: "低い球が打ちやすい番手",
+    },
+    POWER: {
+      title: "飛ばしすぎで難ライを作らない",
+      desc: "飛距離があるほど、次打が極端なライに入りやすい場面があります。飛ぶ人ほど刻むべきコースです。",
+      action: "平坦なライを残せるクラブを優先する。",
+      keyClub: "コントロールしやすいUT",
+    },
+    MENTAL: {
+      title: "山岳コース特有の圧迫感に負けない",
+      desc: "景色の圧に飲まれて番手やテンポがズレやすいです。ルーティンを固定するだけでかなり安定します。",
+      action: "毎ショット、呼吸→素振り1回→構えるの順を固定する。",
+      keyClub: "安心感のあるFW",
+    },
+  },
+  ujitawara: {
+    AGGRESSIVE: {
+      title: "ドッグレッグの誘惑を断ち切る",
+      desc: "『越えられそう』が最も危険なコースです。ショートカットを封じるだけでスコアがまとまりやすくなります。",
+      action: "最初に安全なレイアップ番手をバッグから抜いて持つ。",
+      keyClub: "3W / ユーティリティ",
+    },
+    STEADY: {
+      title: "大型グリーンでは乗せるだけでは不十分",
+      desc: "宇治田原は3パット回避が重要です。ピンと同じ面や上りラインを残すことまで含めて設計してください。",
+      action: "ピン位置ではなく手前エッジ基準で番手を選ぶ。",
+      keyClub: "距離感が合うミドルアイアン",
+    },
+    TECHNICAL: {
+      title: "大型グリーンの段差攻略がカギ",
+      desc: "どこに乗せるかでパット数が大きく変わります。段と傾斜の把握がスコア直結です。",
+      action: "グリーン全体の高低差を必ず先に見る。",
+      keyClub: "スピンコントロールできるウェッジ",
+    },
+    FEEL: {
+      title: "池や谷の圧迫感をリズムで制御する",
+      desc: "視覚情報でテンポが乱れやすいです。景色に対抗するより、自分のリズムを守る意識が重要です。",
+      action: "ハザード越え前は深呼吸2回してから入る。",
+      keyClub: "最も自信を持って振れる番手",
+    },
+    POWER: {
+      title: "飛距離より角度優先で組み立てる",
+      desc: "飛ばせても、角度が悪ければ大型グリーンで3パットが増えます。置き所の質を優先してください。",
+      action: "ティーショット前に『次打の角度』を基準にクラブ選択する。",
+      keyClub: "200y前後を置きにいけるクラブ",
+    },
+    MENTAL: {
+      title: "1回の池越えミスを引きずらない",
+      desc: "宇治田原は視覚プレッシャーが多く、1ミス後の流れ崩壊が起きやすいです。切り替え設計が必要です。",
+      action: "ミス直後は次の安全地点だけを口に出す。",
+      keyClub: "顔つきで安心できるクラブ",
+    },
+  },
+};
+
+/* =========================================================
+   7) プレミアム風深掘りデータ
+========================================================= */
+const PREMIUM_DATA = {
+  otsu: {
+    map: {
+      attack: "天ヶ瀬の比較的素直なホール、南郷の3打目勝負ホール",
+      defend: "石山コース全体、長いPar3、池越え",
+    },
+    steps: [
+      {
+        name: "南郷6番",
+        tee: "右の無理なラインは使わず、平坦なフェアウェイ優先。",
+        second: "残り距離ではなく『次打のライ』を優先してレイアップ。",
+        green: "奥は速くなりやすいため、手前から攻める。",
+      },
+      {
+        name: "石山8番",
+        tee: "池越えはセンター狙い。ピンは見ない。",
+        second: "ショート時は無理に寄せずボギーOKの発想。",
+        green: "下りは触るだけ。返しを残しすぎない。",
+      },
+    ],
+  },
+  nisshin: {
+    map: {
+      attack: "醍醐の前半、比較的視界が素直なホール",
+      defend: "宇治の終盤、高低差が大きいホール",
+    },
+    steps: [
+      {
+        name: "醍醐6番",
+        tee: "方向性優先でセンターへ。",
+        second: "左手前バンカーNG。右花道側へレイアップ。",
+        green: "上げるより転がしも選択肢に。",
+      },
+      {
+        name: "宇治14番",
+        tee: "右NG。置き所を明確に絞る。",
+        second: "足場を見て無理しない。番手のブレを減らす。",
+        green: "同じ段に乗せることを最優先。",
+      },
+    ],
+  },
+  ujitawara: {
+    map: {
+      attack: "嘉納コース全般、比較的広いホール",
+      defend: "大福・大杉のドッグレッグと池越え",
+    },
+    steps: [
+      {
+        name: "大福2番",
+        tee: "1W固定をやめ、3WやUTで置きに行く。",
+        second: "右ドッグの角度を考え、左サイドから攻める。",
+        green: "大型グリーンの段差を最優先に確認。",
+      },
+      {
+        name: "嘉納5番",
+        tee: "池を見ないラインを選ぶ。",
+        second: "無理なピン狙いを封じる。",
+        green: "まず2パット圏内へ寄せる発想。",
+      },
+    ],
+  },
+};
+
+/* =========================================================
+   8) 50問診断
+========================================================= */
+const sections = [
+  {
+    title: "第1章：現状とプレースタイル",
+    tag: "FOUNDATION",
+    sub: "現状把握・再現性・基礎体力・自己認識をチェックします。",
+    questions: [
+      {
+        id: 1,
+        text: "現在の平均スコアは？",
+        options: [
+          {
+            label: "110以上",
+            score: { fundamentals: 2, pressure: 1 },
+          },
+          { label: "100〜109", score: { fundamentals: 1.3, pressure: 0.5 } },
+          { label: "90〜99", score: { fundamentals: 0.7 } },
+          { label: "89以下", score: { fundamentals: 0 } },
+        ],
+      },
+      {
+        id: 2,
+        text: "最もスコアを崩している原因は？",
+        options: [
+          { label: "ティーショット", score: { swing: 2, power: 1 } },
+          { label: "アイアンのダフリ・トップ", score: { swing: 2 } },
+          {
+            label: "アプローチ・パター",
+            score: { shortGame: 1.2, putting: 1.2 },
+          },
+          { label: "メンタル・判断", score: { mental: 1.5, management: 1 } },
+        ],
+      },
+      {
+        id: 3,
+        text: "練習頻度は？",
+        options: [
+          { label: "月0〜1回", score: { fundamentals: 2 } },
+          { label: "月2〜4回", score: { fundamentals: 1 } },
+          { label: "月5回以上", score: { fundamentals: 0 } },
+        ],
+      },
+      {
+        id: 4,
+        text: "スイングを動画で確認していますか？",
+        options: [
+          { label: "毎回する", score: { technical: 1, fundamentals: 0 } },
+          { label: "たまにする", score: { technical: 0.5, fundamentals: 1 } },
+          { label: "ほぼしない", score: { fundamentals: 2 } },
+        ],
+      },
+      {
+        id: 5,
+        text: "スイング中に最も力むのは？",
+        options: [
+          { label: "グリップ・腕", score: { swing: 1, mental: 1 } },
+          { label: "肩・上半身", score: { swing: 1, mental: 1 } },
+          { label: "特に力まない", score: { mental: 0 } },
+        ],
+      },
+      {
+        id: 6,
+        text: "各番手のキャリーを把握していますか？",
+        options: [
+          { label: "正確に把握している", score: { fundamentals: 0, management: 0 } },
+          { label: "だいたい把握", score: { fundamentals: 1, management: 0.5 } },
+          { label: "ほぼわからない", score: { fundamentals: 2, management: 1 } },
+        ],
+      },
+      {
+        id: 7,
+        text: "クラブセッティングは自分に合っていますか？",
+        options: [
+          { label: "合っている", score: { fundamentals: 0 } },
+          { label: "少し不安", score: { fundamentals: 1 } },
+          { label: "わからない", score: { fundamentals: 1.5 } },
+          { label: "合っていない気がする", score: { fundamentals: 2, swing: 0.5 } },
+        ],
+      },
+      {
+        id: 8,
+        text: "ラウンド前に10分以上ストレッチしますか？",
+        options: [
+          { label: "する", score: { fitness: 0 } },
+          { label: "しない", score: { fitness: 2 } },
+        ],
+      },
+      {
+        id: 9,
+        text: "後半で下半身の疲れや乱れを感じますか？",
+        options: [
+          { label: "かなり感じる", score: { fitness: 2 } },
+          { label: "少し感じる", score: { fitness: 1 } },
+          { label: "あまり感じない", score: { fitness: 0 } },
+        ],
+      },
+      {
+        id: 10,
+        text: "ミス直後に原因を分析できますか？",
+        options: [
+          { label: "すぐできる", score: { technical: 1, fundamentals: 0 } },
+          { label: "少しできる", score: { fundamentals: 0.5 } },
+          { label: "感情的になる", score: { mental: 2, pressure: 0.5 } },
+          { label: "よくわからない", score: { fundamentals: 1.5 } },
+        ],
+      },
+    ],
+  },
+  {
+    title: "第2章：ドライバー＆フルスイング",
+    tag: "FULL SWING",
+    sub: "軌道、ミート率、傾斜対応、バランスを確認します。",
+    questions: [
+      {
+        id: 11,
+        text: "ドライバーの大きなミスは？",
+        options: [
+          { label: "スライス・右プッシュ", score: { swing: 2, power: 0.5 } },
+          { label: "フック・左引っかけ", score: { swing: 2, power: 0.5 } },
+          { label: "テンプラ・チョロ", score: { swing: 2, fundamentals: 1 } },
+          { label: "大きなミスは少ない", score: { swing: 0 } },
+        ],
+      },
+      {
+        id: 12,
+        text: "フィニッシュで3秒止まれますか？",
+        options: [
+          { label: "止まれる", score: { swing: 0, fitness: 0 } },
+          { label: "時々止まれる", score: { swing: 1, fitness: 0.5 } },
+          { label: "止まれない", score: { swing: 1.5, fitness: 1 } },
+        ],
+      },
+      {
+        id: 13,
+        text: "切り返しはどこから始めていますか？",
+        options: [
+          { label: "腰・下半身", score: { swing: 0 } },
+          { label: "腕・手元", score: { swing: 2 } },
+          { label: "意識していない", score: { swing: 1.5 } },
+        ],
+      },
+      {
+        id: 14,
+        text: "自分のスイング軌道を理解していますか？",
+        options: [
+          { label: "理解している", score: { swing: 0, technical: 1 } },
+          { label: "少し理解している", score: { swing: 0.7, technical: 0.5 } },
+          { label: "理解していない", score: { swing: 2 } },
+        ],
+      },
+      {
+        id: 15,
+        text: "アイアン後のターフはどうなりますか？",
+        options: [
+          { label: "ボール先が取れる", score: { swing: 0 } },
+          { label: "払い打ち気味", score: { swing: 1 } },
+          { label: "手前をダフる", score: { swing: 2 } },
+        ],
+      },
+      {
+        id: 16,
+        text: "アドレスで右肩が前に出やすいですか？",
+        options: [
+          { label: "よく出る", score: { swing: 1.5 } },
+          { label: "少しある", score: { swing: 0.7 } },
+          { label: "ない", score: { swing: 0 } },
+        ],
+      },
+      {
+        id: 17,
+        text: "頭が大きく動くと言われますか？",
+        options: [
+          { label: "よく言われる", score: { swing: 2, fitness: 0.5 } },
+          { label: "たまに言われる", score: { swing: 1 } },
+          { label: "言われない", score: { swing: 0 } },
+        ],
+      },
+      {
+        id: 18,
+        text: "芯に当たる確率は？",
+        options: [
+          { label: "30%以下", score: { swing: 2 } },
+          { label: "30〜70%", score: { swing: 1 } },
+          { label: "70%以上", score: { swing: 0 } },
+        ],
+      },
+      {
+        id: 19,
+        text: "傾斜地のセオリーを理解していますか？",
+        options: [
+          { label: "理解している", score: { management: 0, fundamentals: 0 } },
+          { label: "少し理解", score: { management: 1 } },
+          { label: "理解していない", score: { management: 1.5, fundamentals: 1 } },
+        ],
+      },
+      {
+        id: 20,
+        text: "フェアウェイウッドを自信を持って使えますか？",
+        options: [
+          { label: "使える", score: { swing: 0 } },
+          { label: "少し不安", score: { swing: 1 } },
+          { label: "使えない", score: { swing: 1.5 } },
+          { label: "そもそも使わない", score: { swing: 1, management: 0.5 } },
+        ],
+      },
+    ],
+  },
+  {
+    title: "第3章：アプローチ＆バンカー",
+    tag: "SHORT GAME",
+    sub: "寄せ・距離感・打ち分け・バンカー精度を見ます。",
+    questions: [
+      {
+        id: 21,
+        text: "30y以内から平均何打で上がれますか？",
+        options: [
+          { label: "4打以上", score: { shortGame: 2, putting: 0.5 } },
+          { label: "3打", score: { shortGame: 1 } },
+          { label: "2打", score: { shortGame: 0 } },
+        ],
+      },
+      {
+        id: 22,
+        text: "アプローチの一番のミスは？",
+        options: [
+          { label: "ザックリ", score: { shortGame: 2 } },
+          { label: "トップ", score: { shortGame: 2 } },
+          { label: "距離感ミス", score: { shortGame: 1.5 } },
+          { label: "大きなミスは少ない", score: { shortGame: 0 } },
+        ],
+      },
+      {
+        id: 23,
+        text: "アプローチで体重移動しますか？",
+        options: [
+          { label: "する", score: { shortGame: 1.5 } },
+          { label: "少しする", score: { shortGame: 1 } },
+          { label: "左足体重固定", score: { shortGame: 0 } },
+        ],
+      },
+      {
+        id: 24,
+        text: "状況で上げる・転がすを打ち分けますか？",
+        options: [
+          { label: "打ち分ける", score: { shortGame: 0, management: 0 } },
+          { label: "少し打ち分ける", score: { shortGame: 0.8, management: 0.3 } },
+          { label: "いつも同じ", score: { shortGame: 2, management: 0.5 } },
+        ],
+      },
+      {
+        id: 25,
+        text: "距離感は振り幅基準で決めていますか？",
+        options: [
+          { label: "決めている", score: { shortGame: 0, technical: 1 } },
+          { label: "感覚が多い", score: { shortGame: 1.5 } },
+        ],
+      },
+      {
+        id: 26,
+        text: "バンカー1発脱出率70%以上ありますか？",
+        options: [
+          { label: "ある", score: { shortGame: 0 } },
+          { label: "ない", score: { shortGame: 2 } },
+        ],
+      },
+      {
+        id: 27,
+        text: "バンカーでフェースを開けますか？",
+        options: [
+          { label: "開ける", score: { shortGame: 0 } },
+          { label: "少し不安", score: { shortGame: 1 } },
+          { label: "開けない", score: { shortGame: 1.5 } },
+        ],
+      },
+      {
+        id: 28,
+        text: "エッジからパター使用に抵抗はありますか？",
+        options: [
+          { label: "ない", score: { management: 0, shortGame: 0 } },
+          { label: "少しある", score: { management: 0.5, shortGame: 0.5 } },
+          { label: "かなりある", score: { management: 1, shortGame: 1 } },
+        ],
+      },
+      {
+        id: 29,
+        text: "インパクトで緩む癖はありますか？",
+        options: [
+          { label: "ある", score: { shortGame: 2, mental: 0.5 } },
+          { label: "少しある", score: { shortGame: 1 } },
+          { label: "ない", score: { shortGame: 0 } },
+        ],
+      },
+      {
+        id: 30,
+        text: "バンスを滑らせる感覚はありますか？",
+        options: [
+          { label: "ある", score: { shortGame: 0 } },
+          { label: "少しある", score: { shortGame: 0.7 } },
+          { label: "ない", score: { shortGame: 1.5 } },
+        ],
+      },
+    ],
+  },
+  {
+    title: "第4章：パッティング",
+    tag: "PUTTING",
+    sub: "距離感、ショートパット、ライン読みの傾向を分析します。",
+    questions: [
+      {
+        id: 31,
+        text: "1ラウンド平均パット数は？",
+        options: [
+          { label: "40以上", score: { putting: 2 } },
+          { label: "36〜39", score: { putting: 1 } },
+          { label: "35以下", score: { putting: 0 } },
+        ],
+      },
+      {
+        id: 32,
+        text: "3パットの最大原因は？",
+        options: [
+          { label: "1打目の距離感", score: { putting: 1.5 } },
+          { label: "短いパットを外す", score: { putting: 1.5, mental: 0.5 } },
+          { label: "ライン読み", score: { putting: 1.2, technical: 0.3 } },
+        ],
+      },
+      {
+        id: 33,
+        text: "苦手なのは？",
+        options: [
+          { label: "上り", score: { putting: 1 } },
+          { label: "下り", score: { putting: 1.5 } },
+          { label: "どちらも", score: { putting: 2 } },
+          { label: "特にない", score: { putting: 0 } },
+        ],
+      },
+      {
+        id: 34,
+        text: "1mパットで顔を残せますか？",
+        options: [
+          { label: "残せる", score: { putting: 0 } },
+          { label: "時々上がる", score: { putting: 0.8 } },
+          { label: "すぐ上がる", score: { putting: 1.5 } },
+        ],
+      },
+      {
+        id: 35,
+        text: "ストローク中に手首は動きますか？",
+        options: [
+          { label: "固定できる", score: { putting: 0 } },
+          { label: "少し動く", score: { putting: 0.8 } },
+          { label: "よく動く", score: { putting: 1.5 } },
+        ],
+      },
+      {
+        id: 36,
+        text: "ラインは後方以外からも確認しますか？",
+        options: [
+          { label: "する", score: { putting: 0, technical: 1 } },
+          { label: "たまにする", score: { putting: 0.5, technical: 0.3 } },
+          { label: "しない", score: { putting: 1 } },
+        ],
+      },
+      {
+        id: 37,
+        text: "パター専用のグリップを使っていますか？",
+        options: [
+          { label: "使っている", score: { putting: 0 } },
+          { label: "少し意識している", score: { putting: 0.5 } },
+          { label: "ショットと同じ", score: { putting: 1 } },
+        ],
+      },
+      {
+        id: 38,
+        text: "ラウンド前に基準距離を測りますか？",
+        options: [
+          { label: "測る", score: { putting: 0, fundamentals: 0 } },
+          { label: "たまに測る", score: { putting: 0.7, fundamentals: 0.2 } },
+          { label: "測らない", score: { putting: 1.5, fundamentals: 0.5 } },
+        ],
+      },
+      {
+        id: 39,
+        text: "芯で打つことを意識していますか？",
+        options: [
+          { label: "常に意識", score: { putting: 0 } },
+          { label: "時々意識", score: { putting: 0.5 } },
+          { label: "あまり意識しない", score: { putting: 1 } },
+        ],
+      },
+      {
+        id: 40,
+        text: "ボールラインを毎回合わせますか？",
+        options: [
+          { label: "毎回合わせる", score: { putting: 0 } },
+          { label: "たまに合わせる", score: { putting: 0.7 } },
+          { label: "合わせない", score: { putting: 1 } },
+          { label: "線を引いていない", score: { putting: 1.5 } },
+        ],
+      },
+    ],
+  },
+  {
+    title: "第5章：コースマネジメント・メンタル",
+    tag: "STRATEGY & MIND",
+    sub: "判断力・感情コントロール・スコアメイクの思考を確認します。",
+    questions: [
+      {
+        id: 41,
+        text: "ハザードは事前に避ける設定をしていますか？",
+        options: [
+          { label: "している", score: { management: 0 } },
+          { label: "時々する", score: { management: 0.7 } },
+          { label: "ピンしか見ない", score: { management: 1.5 } },
+        ],
+      },
+      {
+        id: 42,
+        text: "ティーショットミス後、無理にグリーンを狙いますか？",
+        options: [
+          { label: "狙う", score: { management: 2, mental: 0.5 } },
+          { label: "たまに狙う", score: { management: 1 } },
+          { label: "刻む", score: { management: 0 } },
+        ],
+      },
+      {
+        id: 43,
+        text: "得意距離を残すレイアップができますか？",
+        options: [
+          { label: "できる", score: { management: 0 } },
+          { label: "少しできる", score: { management: 0.7 } },
+          { label: "できない", score: { management: 1.5, fundamentals: 0.5 } },
+        ],
+      },
+      {
+        id: 44,
+        text: "人前や朝イチでテンポが速くなりますか？",
+        options: [
+          { label: "なる", score: { mental: 2, pressure: 1 } },
+          { label: "少しなる", score: { mental: 1, pressure: 0.5 } },
+          { label: "ならない", score: { mental: 0 } },
+        ],
+      },
+      {
+        id: 45,
+        text: "プレショットルーティンは一定ですか？",
+        options: [
+          { label: "一定", score: { mental: 0, management: 0 } },
+          { label: "少しブレる", score: { mental: 0.7 } },
+          { label: "毎回違う", score: { mental: 1.5 } },
+        ],
+      },
+      {
+        id: 46,
+        text: "風向きや高低差を計算して番手を選びますか？",
+        options: [
+          { label: "毎回する", score: { management: 0, technical: 0.5 } },
+          { label: "大体する", score: { management: 1 } },
+          { label: "あまりしない", score: { management: 1.5 } },
+        ],
+      },
+      {
+        id: 47,
+        text: "大叩き後、次ホールまで引きずりますか？",
+        options: [
+          { label: "引きずる", score: { mental: 2, pressure: 1 } },
+          { label: "少し引きずる", score: { mental: 1 } },
+          { label: "切り替えられる", score: { mental: 0 } },
+        ],
+      },
+      {
+        id: 48,
+        text: "セカンドで安全な外し場所を決めていますか？",
+        options: [
+          { label: "決めている", score: { management: 0 } },
+          { label: "時々決める", score: { management: 0.7 } },
+          { label: "常にピン狙い", score: { management: 1.5 } },
+        ],
+      },
+      {
+        id: 49,
+        text: "林などのトラブル時、安全に出せますか？",
+        options: [
+          { label: "出せる", score: { management: 0, mental: 0 } },
+          { label: "たまに無理する", score: { management: 1, mental: 0.3 } },
+          { label: "前を狙ってしまう", score: { management: 2, mental: 0.5 } },
+        ],
+      },
+      {
+        id: 50,
+        text: "トータルスコアを気にしすぎてプレッシャーになりますか？",
+        options: [
+          { label: "なる", score: { mental: 2, pressure: 1 } },
+          { label: "少しなる", score: { mental: 1, pressure: 0.5 } },
+          { label: "ならない", score: { mental: 0 } },
+        ],
+      },
+    ],
+  },
+];
+
+/* =========================================================
+   9) ユーティリティ
+========================================================= */
+function flattenQuestions() {
+  return sections.flatMap((s) => s.questions);
+}
+
+const ALL_QUESTIONS = flattenQuestions();
+
+function getProgressCount(answers) {
+  return Object.keys(answers).length;
+}
+
+function calculateTotals(answers) {
+  const totals = {
+    fundamentals: 0,
+    swing: 0,
+    shortGame: 0,
+    putting: 0,
+    mental: 0,
+    management: 0,
+    fitness: 0,
+    technical: 0,
+    power: 0,
+    pressure: 0,
+  };
+
+  ALL_QUESTIONS.forEach((q) => {
+    const selectedIndex = answers[q.id];
+    if (selectedIndex === undefined) return;
+    const selected = q.options[selectedIndex];
+    Object.entries(selected.score).forEach(([k, v]) => {
+      totals[k] += v;
+    });
+  });
+
+  return totals;
+}
+
+function detectPlayerType(totals) {
+  const riskScore = totals.mental + totals.management + totals.pressure;
+  const touchScore = totals.shortGame + totals.putting;
+  const powerScore = totals.power + totals.swing;
+  const analysisScore = totals.technical + (totals.management < 5 ? 1 : 0);
+  const steadyScore = (totals.management < 5 ? 2 : 0) + (totals.mental < 5 ? 2 : 0);
+  const mentalSensitiveScore = totals.mental + totals.pressure + (totals.technical < 1.5 ? 0.5 : 0);
+
+  if (analysisScore >= 2.5) return "TECHNICAL";
+  if (mentalSensitiveScore >= 5.5) return "MENTAL";
+  if (powerScore >= 4.5 && totals.management >= 4) return "POWER";
+  if (riskScore >= 6) return "AGGRESSIVE";
+  if (touchScore >= 5 && totals.technical < 2.5) return "FEEL";
+  return "STEADY";
+}
+
+function getTopIssues(totals, count = 3) {
+  return Object.entries(totals)
+    .filter(([key]) => CATEGORY_INFO[key])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count);
+}
+
+function buildTrainingPlan(topIssues, playerType) {
+  const base = [
+    `Day1：最重要課題「${CATEGORY_INFO[topIssues[0][0]].name}」の基礎ドリルを30分`,
+    `Day2：動画撮影しながら「${CATEGORY_INFO[topIssues[1][0]].name}」の再現性チェック`,
+    `Day3：ショートゲーム重点練習（10y・20y・30y）`,
+    `Day4：パットの距離感と1mショートパット反復`,
+    `Day5：次回コースを想定したマネジメント確認`,
+    `Day6：プレッシャー下の1球勝負練習`,
+    `Day7：総合テストと振り返り`,
+  ];
+
+  if (playerType === "AGGRESSIVE") {
+    base[4] = "Day5：『攻めない勇気』をテーマにレイアップ判断の確認";
+  }
+  if (playerType === "STEADY") {
+    base[5] = "Day6：安全運転だけで終わらない『攻め所』の確認";
+  }
+  if (playerType === "TECHNICAL") {
+    base[1] = "Day2：考えすぎ防止のため、修正点を1つだけに絞って動画確認";
+  }
+  if (playerType === "FEEL") {
+    base[3] = "Day4：距離感基準を数値化して、感覚の再現性を作る";
+  }
+  if (playerType === "POWER") {
+    base[0] = "Day1：飛ばす練習ではなく『置きにいくティーショット』を30分";
+  }
+  if (playerType === "MENTAL") {
+    base[5] = "Day6：ミス後ルーティンと呼吸法を組み込んだメンタル練習";
+  }
+
+  return base;
+}
+
+function buildCaddieCallouts(playerType, course, totals) {
+  const mainWeakness = getTopIssues(totals, 1)[0]?.[0];
+  const weaknessName = mainWeakness ? CATEGORY_INFO[mainWeakness].name : "総合調整";
+
+  const base = [
+    `今日の最優先テーマは「${weaknessName}」です。良い1打より、悪い1打を減らす意識で回りましょう。`,
+    `ティーショット前は「どこに置くか」を先に決めてから構えてください。`,
+    `グリーンはピンではなく、安全に2パット圏内へ運ぶ発想を持ちましょう。`,
+  ];
+
+  const mapByType = {
+    AGGRESSIVE: "ナイスショットより、次打が簡単になる場所を優先してください。",
+    STEADY: "安全策は強みですが、長い番手を残しすぎないよう注意してください。",
+    TECHNICAL: "情報を集めたら、最後はシンプルに1ターゲット1スイングです。",
+    FEEL: "感覚は武器です。ただし番手だけは必ず数字で確認してください。",
+    POWER: "飛距離優位を使う日は、振る場面より置く場面を先に決めましょう。",
+    MENTAL: "ミス直後は反省より、次の安全地点だけを考えてください。",
+  };
+
+  const mapByCourse = {
+    otsu: "大津東では長い2打目を難しくしないことが最大の攻略です。",
+    nisshin: "日清都では高低差込みの実質距離を信じることが重要です。",
+    ujitawara: "宇治田原では大型グリーンでの3パット回避が最重要です。",
+  };
+
+  return [...base, mapByType[playerType], mapByCourse[course.id]];
+}
+
+/* =========================================================
+   10) UIコンポーネント
+========================================================= */
+function SectionHeader({ title, tag, sub }) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+          {title}
+        </h2>
+        <span className="text-xs font-bold bg-amber-100 text-amber-800 rounded-full px-3 py-1">
+          {tag}
+        </span>
+      </div>
+      <p className="text-sm text-slate-600">{sub}</p>
+    </div>
+  );
+}
+
+function QuestionCard({ q, selectedValue, onChange }) {
+  return (
+    <div className="border-t border-slate-200 py-6 first:border-t-0">
+      <div className="font-bold text-slate-900 mb-4 text-[15px] md:text-base">
+        Q{q.id}. {q.text}
+      </div>
+      <div className="grid gap-3">
+        {q.options.map((opt, idx) => {
+          const checked = selectedValue === idx;
+          return (
+            <label
+              key={idx}
+              className={`flex items-start gap-3 rounded-2xl border p-4 cursor-pointer transition-all ${
+                checked
+                  ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+              }`}
+            >
+              <input
+                type="radio"
+                name={`q-${q.id}`}
+                checked={checked}
+                onChange={() => onChange(q.id, idx)}
+                className="mt-1 accent-emerald-600"
+              />
+              <span className="text-slate-800 text-sm md:text-[15px]">{opt.label}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   11) メインアプリ
+========================================================= */
+export default function App() {
+  const [answers, setAnswers] = useState({});
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [email, setEmail] = useState("");
+  const [showResult, setShowResult] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+
+  const progressCount = getProgressCount(answers);
+  const progressPercent = Math.round((progressCount / 50) * 100);
+
+  const selectedCourse = useMemo(
+    () => COURSES.find((c) => c.id === selectedCourseId) || null,
+    [selectedCourseId]
+  );
+
+  const totals = useMemo(() => calculateTotals(answers), [answers]);
+  const playerTypeId = useMemo(() => detectPlayerType(totals), [totals]);
+  const playerType = PLAYER_TYPES.find((t) => t.id === playerTypeId);
+
+  const topIssues = useMemo(() => getTopIssues(totals, 3), [totals]);
+  const trainingPlan = useMemo(
+    () => buildTrainingPlan(topIssues, playerTypeId),
+    [topIssues, playerTypeId]
+  );
+
+  const affiliate = AFFILIATE_RECOMMENDATIONS[playerTypeId];
+  const courseAdvice = selectedCourse
+    ? COURSE_TYPE_ADVICE[selectedCourse.id][playerTypeId]
+    : null;
+  const caddieCallouts = selectedCourse
+    ? buildCaddieCallouts(playerTypeId, selectedCourse, totals)
+    : [];
+
+  const handleAnswer = (id, value) => {
+    setAnswers((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (progressCount < 50) {
+      alert("50問すべて回答してください。");
+      return;
+    }
+
+    if (!selectedCourseId) {
+      alert("次回行くコースを選択してください。");
+      return;
+    }
+
+    setShowResult(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setSelectedCourseId("");
+    setEmail("");
+    setShowResult(false);
+    setIsPremium(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-800">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 flex items-center gap-3">
+          <Flag className="w-8 h-8 text-amber-300" />
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+              ゴルフDNA診断 × AIキャディ
+            </h1>
+            <p className="text-slate-300 text-sm mt-1">
+              50問診断で6タイプ分析 → 次回コース攻略 → クラブ提案まで一気通貫
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        {/* HERO */}
+        {!showResult && (
+          <section className="rounded-3xl overflow-hidden shadow-2xl mb-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white">
+            <div className="p-6 md:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full bg-amber-300 text-slate-900 px-3 py-1 text-xs font-black mb-4">
+                PREMIUM GOLF ANALYSIS
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4">
+                あなたの弱点と伸びしろを
+                <br className="hidden md:block" />
+                完全解析
+              </h2>
+              <p className="text-slate-300 max-w-3xl text-sm md:text-base leading-7">
+                スイング、ショートゲーム、パッティング、メンタル、マネジメントを可視化し、
+                6タイプに分類。さらに、次回ラウンド予定コースに合わせて、あなただけの
+                AIキャディ戦略とおすすめクラブを提示します。
+              </p>
+
+              <div className="mt-6">
+                <div className="flex justify-between items-center text-sm text-slate-300 mb-2">
+                  <span>回答進捗</span>
+                  <strong>
+                    {progressCount} / 50
+                  </strong>
+                </div>
+                <div className="h-4 bg-white/10 rounded-full overflow-hidden border border-white/10">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-300 to-yellow-200 transition-all duration-300"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
             </div>
-          `;
-          container.appendChild(div);
-        });
-      });
-    }
+          </section>
+        )}
 
-    function updateProgress() {
-      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-      document.getElementById("progressText").textContent = `${answered} / 50`;
-      document.getElementById("progressFill").style.width = `${answered * 2}%`;
-    }
+        {/* RESULT */}
+        {showResult && playerType && selectedCourse && (
+          <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            {/* result top */}
+            <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
+              <div
+                className={`bg-gradient-to-r ${playerType.color} text-white p-6 md:p-8`}
+              >
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-black mb-4">
+                  RESULT PROFILE
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+                      あなたのタイプ：{playerType.name}
+                    </h2>
+                    <p className="mt-3 text-white/90 max-w-3xl">{playerType.summary}</p>
+                  </div>
+                  <div className="bg-white/15 rounded-2xl px-4 py-3 backdrop-blur">
+                    <div className="text-xs font-bold text-white/80 mb-1">次回攻略コース</div>
+                    <div className="font-black text-lg">{selectedCourse.name}</div>
+                  </div>
+                </div>
+              </div>
 
-    function getTotals() {
-      const totals = {
-        fundamentals: 0,
-        swing: 0,
-        shortGame: 0,
-        putting: 0,
-        mental: 0,
-        management: 0,
-        fitness: 0,
-        technical: 0
-      };
+              <div className="p-6 md:p-8 grid md:grid-cols-3 gap-4">
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <div className="text-xs font-bold text-slate-500 mb-2">平均スコア傾向</div>
+                  <div className="text-2xl font-black text-slate-900">
+                    {selectedCourse.stats.avgScore}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                  <div className="text-xs font-bold text-slate-500 mb-2">FWキープ率</div>
+                  <div className="text-2xl font-black text-slate-900">
+                    {selectedCourse.stats.fwKeep}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
+                  <div className="text-xs font-bold text-emerald-700 mb-2">攻略の鍵</div>
+                  <div className="font-black text-emerald-900 text-lg">
+                    {selectedCourse.stats.key}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      sections.forEach(section => {
-        section.questions.forEach(q => {
-          const checked = document.querySelector(`input[name="q${q.id}"]:checked`);
-          if (!checked) return;
-          const selected = q.options[Number(checked.value)];
-          Object.entries(selected.score).forEach(([k, v]) => {
-            totals[k] += v;
-          });
-        });
-      });
+            {/* top issues */}
+            <div className="grid md:grid-cols-3 gap-4">
+              {topIssues.map(([key], idx) => (
+                <div
+                  key={key}
+                  className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5"
+                >
+                  <div className="inline-flex rounded-full bg-slate-100 text-slate-600 text-[11px] font-black px-3 py-1 mb-3">
+                    TOP ISSUE 0{idx + 1}
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 mb-3">
+                    {CATEGORY_INFO[key].name}
+                  </h3>
+                  <ul className="space-y-2 text-sm text-slate-700">
+                    {CATEGORY_INFO[key].actions.map((a, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="text-emerald-600 font-black">•</span>
+                        <span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
 
-      return totals;
-    }
+            {/* course summary */}
+            <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-slate-900 text-white p-4 flex items-center gap-2">
+                <Map className="w-5 h-5 text-emerald-400" />
+                <h3 className="font-bold text-lg">コースの本質と攻略サマリー</h3>
+              </div>
+              <div className="p-6 space-y-5">
+                <p className="text-slate-700 leading-7">{selectedCourse.essence}</p>
 
-    function getProfile(totals) {
-      const aggressive = totals.management + totals.mental > 6 ? 1 : 0;
-      const steady = totals.management < 4 && totals.mental < 4 ? 1 : 0;
-      const feel = totals.shortGame > 4 && totals.technical < 2 ? 1 : 0;
-      const technical = totals.technical >= 2 ? 1 : 0;
+                <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-5">
+                  <div className="flex items-center gap-2 text-emerald-800 font-bold mb-2">
+                    <Target className="w-4 h-4" />
+                    あなた専用戦略
+                  </div>
+                  <h4 className="text-xl font-black text-emerald-900 mb-2">
+                    {courseAdvice.title}
+                  </h4>
+                  <p className="text-slate-700 leading-7 mb-4">{courseAdvice.desc}</p>
 
-      if (technical) return "technical";
-      if (aggressive) return "aggressive";
-      if (feel) return "feel";
-      return "steady";
-    }
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="rounded-2xl bg-white border border-emerald-100 p-4">
+                      <div className="flex items-center gap-2 text-sm font-bold text-emerald-800 mb-2">
+                        <Crosshair className="w-4 h-4" />
+                        具体アクション
+                      </div>
+                      <p className="text-sm text-slate-700">{courseAdvice.action}</p>
+                    </div>
+                    <div className="rounded-2xl bg-white border border-slate-200 p-4">
+                      <div className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                        <Flag className="w-4 h-4" />
+                        キーとなるクラブ
+                      </div>
+                      <p className="text-lg font-black text-slate-900">
+                        {courseAdvice.keyClub}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-    function renderResults(totals) {
-      const ranked = Object.entries(totals)
-        .filter(([key]) => key !== "technical")
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
+                <div className="rounded-2xl bg-rose-50 border border-rose-200 p-5 flex gap-3">
+                  <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0 mt-1" />
+                  <div>
+                    <div className="font-black text-rose-800 mb-1">
+                      このコースでの絶対禁止事項
+                    </div>
+                    <div className="font-bold text-rose-900">
+                      {TYPE_PROHIBITIONS[playerTypeId]}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      const profile = getProfile(totals);
+            {/* ai caddie */}
+            <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-4 flex items-center gap-2">
+                <BrainCircuit className="w-5 h-5" />
+                <h3 className="font-bold text-lg">AIキャディからのラウンド指示</h3>
+              </div>
+              <div className="p-6">
+                <div className="grid gap-3">
+                  {caddieCallouts.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex gap-3"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-black flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </div>
+                      <p className="text-slate-700 leading-7">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-      document.getElementById("profileType").textContent = profile.toUpperCase();
-      document.getElementById("profileMessage").textContent = profileMessages[profile];
+            {/* holes */}
+            <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6">
+              <h3 className="font-black text-xl text-slate-900 mb-5 flex items-center gap-2">
+                <Map className="w-5 h-5 text-emerald-600" />
+                警戒すべき代表ホール
+              </h3>
+              <div className="space-y-4">
+                {selectedCourse.holes.map((hole, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-2xl bg-slate-50 border border-slate-200 p-4 md:p-5"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-start gap-4">
+                      <div className="md:w-1/4">
+                        <div className="font-black text-emerald-800 text-lg">{hole.name}</div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {hole.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[11px] font-bold rounded-full bg-white border border-slate-200 px-2 py-1 text-slate-600"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="md:w-3/4 text-slate-700 leading-7">{hole.strategy}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-      ranked.forEach((item, idx) => {
-        const key = item[0];
-        document.getElementById(`issue${idx + 1}`).textContent = recommendations[key].name;
-        document.getElementById(`issue${idx + 1}Actions`).innerHTML =
-          recommendations[key].actions.map(a => `<li>${a}</li>`).join("");
-      });
+            {/* training plan */}
+            <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6">
+              <h3 className="font-black text-xl text-slate-900 mb-4 flex items-center gap-2">
+                <Gauge className="w-5 h-5 text-emerald-600" />
+                7日間のおすすめ練習プラン
+              </h3>
+              <ol className="space-y-3">
+                {trainingPlan.map((p, i) => (
+                  <li
+                    key={i}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-slate-700"
+                  >
+                    <span className="font-bold text-slate-900">{p}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-      const picked = affiliateLinks[profile];
-      document.getElementById("affiliateTitle").textContent = picked.title;
-      document.getElementById("affiliateText").textContent =
-        picked.text + " 診断タイプとの相性を踏まえて、最初の1本として選びやすいモデルを表示しています。";
-      document.getElementById("affiliateLink").href = picked.url;
+            {/* affiliate */}
+            <div className="rounded-3xl overflow-hidden border border-rose-200 shadow-xl bg-gradient-to-br from-white to-rose-50">
+              <div className="p-6 md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full bg-rose-100 text-rose-700 px-3 py-1 text-xs font-black mb-4">
+                  RECOMMENDED CLUB
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-3">
+                  {affiliate.title}
+                </h3>
+                <p className="text-slate-700 leading-7 max-w-3xl mb-3">{affiliate.text}</p>
+                <div className="rounded-2xl bg-white border border-slate-200 p-4 inline-block mb-4">
+                  <div className="text-xs font-bold text-slate-500 mb-1">推奨モデル方向性</div>
+                  <div className="font-black text-slate-900">{affiliate.product}</div>
+                </div>
+                <div>
+                  <a
+                    href={affiliate.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black px-6 py-4 transition-all shadow-lg"
+                  >
+                    <Star className="w-5 h-5" />
+                    あなたに合うクラブを確認する
+                  </a>
+                </div>
+                <p className="text-xs text-slate-500 mt-3">
+                  ※この部分はアフィリエイトURL差し替え前提です。実運用時は楽天・Amazon・提携ECのリンクに置き換えてください。
+                </p>
+              </div>
+            </div>
 
-      const plan = [
-        "Day1：トップ課題の基礎ドリルを30分",
-        "Day2：動画撮影をしながら再現性チェック",
-        "Day3：ショートゲーム重点練習",
-        "Day4：パット距離感合わせ",
-        "Day5：コースマネジメントの見直し",
-        "Day6：プレッシャー下でのルーティン練習",
-        "Day7：総合テストと振り返り"
-      ];
-      document.getElementById("trainingPlan").innerHTML = plan.map(p => `<li>${p}</li>`).join("");
+            {/* premium */}
+            {!isPremium ? (
+              <div className="rounded-3xl bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 text-center shadow-2xl">
+                <Unlock className="w-8 h-8 mx-auto mb-3 text-amber-300" />
+                <h3 className="font-black text-2xl mb-2">プレミアム戦略を表示</h3>
+                <p className="text-slate-300 max-w-2xl mx-auto mb-6">
+                  さらに詳細なホール別3ステップ攻略、攻めるべきエリア・守るべきエリア、
+                  より深い戦術メモを表示します。
+                </p>
+                <button
+                  onClick={() => setIsPremium(true)}
+                  className="inline-flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-black px-8 py-4 transition-all shadow-[0_0_25px_rgba(16,185,129,0.45)]"
+                >
+                  <Unlock className="w-5 h-5" />
+                  プレミアム戦略をアンロック
+                </button>
+              </div>
+            ) : (
+              <div className="rounded-3xl bg-white border border-amber-200 shadow-2xl overflow-hidden">
+                <div className="bg-gradient-to-r from-amber-300 to-yellow-400 text-slate-900 p-5">
+                  <h3 className="font-black text-2xl flex items-center gap-2">
+                    <Trophy className="w-6 h-6" />
+                    プレミアム・インサイト
+                  </h3>
+                </div>
 
-      document.getElementById("resultSection").style.display = "block";
-      window.scrollTo({
-        top: document.getElementById("resultSection").offsetTop - 20,
-        behavior: "smooth"
-      });
-    }
+                <div className="p-6 md:p-8 space-y-8">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+                      <div className="flex items-center gap-2 font-bold text-slate-700 mb-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        推奨クラブ方針
+                      </div>
+                      <p className="text-slate-700 leading-7">
+                        {courseAdvice.keyClub} を軸に、無理なく置きに行ける番手を優先してください。
+                        大叩きの原因は“1打のナイスショット不足”ではなく、“難しい次打を残すこと”です。
+                      </p>
+                    </div>
 
-    renderQuestions();
-    document.addEventListener("change", updateProgress);
+                    <div className="rounded-2xl bg-blue-50 border border-blue-200 p-5">
+                      <div className="flex items-center gap-2 font-bold text-blue-800 mb-2">
+                        <BrainCircuit className="w-5 h-5" />
+                        メンタル指示
+                      </div>
+                      <p className="text-blue-800 leading-7">
+                        {playerTypeId === "MENTAL"
+                          ? "ミスの分析はホールアウト後で十分です。ラウンド中は『次の安全地点』だけを考えてください。"
+                          : playerTypeId === "AGGRESSIVE"
+                          ? "攻めたい気持ちが出た時ほど、ボギーで十分という発想に戻してください。"
+                          : playerTypeId === "TECHNICAL"
+                          ? "情報収集後は3秒以内に始動するルールを作ると、迷いが減ります。"
+                          : playerTypeId === "FEEL"
+                          ? "感覚が良い日はそれを活かしつつ、番手だけは必ず数字で確認してください。"
+                          : playerTypeId === "POWER"
+                          ? "飛ばせる日は、逆に振らない勇気がスコアを作ります。"
+                          : "安全第一は強みです。ただし攻めて良いホールではしっかり前に進めてください。"}
+                      </p>
+                    </div>
 
-    document.getElementById("quizForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-      if (answered < 50) {
-        alert("50問すべて回答してください。");
-        return;
-      }
-      const totals = getTotals();
-      renderResults(totals);
-    });
+                    <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-5">
+                      <div className="flex items-center gap-2 font-bold text-emerald-800 mb-2">
+                        <TrendingUp className="w-5 h-5" />
+                        データ視点
+                      </div>
+                      <p className="text-emerald-800 leading-7">
+                        {selectedCourse.id === "otsu" &&
+                          "大津東では、長い2打目をどれだけ減らせるかがスコア差になります。"}
+                        {selectedCourse.id === "nisshin" &&
+                          "日清都では、見た目距離ではなく実質距離への適応が大きな差を生みます。"}
+                        {selectedCourse.id === "ujitawara" &&
+                          "宇治田原では、大型グリーンでの1stパット距離感がスコアへ直結します。"}
+                      </p>
+                    </div>
+                  </div>
 
-    document.getElementById("resetBtn").addEventListener("click", function() {
-      document.getElementById("quizForm").reset();
-      document.getElementById("resultSection").style.display = "none";
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+                    <h4 className="font-black text-xl mb-4 flex items-center gap-2">
+                      <Map className="w-5 h-5 text-slate-700" />
+                      18ホールの方針
+                    </h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="rounded-2xl bg-white border-l-4 border-rose-500 p-4 shadow-sm">
+                        <div className="font-black text-rose-700 mb-2">攻めるべきエリア</div>
+                        <p className="text-slate-700">
+                          {PREMIUM_DATA[selectedCourse.id].map.attack}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl bg-white border-l-4 border-blue-500 p-4 shadow-sm">
+                        <div className="font-black text-blue-700 mb-2">守るべきエリア</div>
+                        <p className="text-slate-700">
+                          {PREMIUM_DATA[selectedCourse.id].map.defend}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-    updateProgress();
-  </script>
-</body>
-</html>
+                  <div>
+                    <h4 className="font-black text-xl mb-4 flex items-center gap-2">
+                      <Target className="w-5 h-5 text-slate-700" />
+                      代表ホールの3ステップ攻略
+                    </h4>
+                    <div className="space-y-4">
+                      {PREMIUM_DATA[selectedCourse.id].steps.map((step, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-2xl overflow-hidden border border-slate-200"
+                        >
+                          <div className="bg-slate-900 text-white px-4 py-3 font-black">
+                            {step.name}
+                          </div>
+                          <div className="grid md:grid-cols-3 gap-0 bg-white">
+                            <div className="p-4 border-b md:border-b-0 md:border-r border-slate-200">
+                              <div className="text-xs font-black text-emerald-600 mb-2">
+                                1. TEE SHOT
+                              </div>
+                              <p className="text-sm text-slate-700 leading-7">{step.tee}</p>
+                            </div>
+                            <div className="p-4 border-b md:border-b-0 md:border-r border-slate-200">
+                              <div className="text-xs font-black text-emerald-600 mb-2">
+                                2. SECOND
+                              </div>
+                              <p className="text-sm text-slate-700 leading-7">{step.second}</p>
+                            </div>
+                            <div className="p-4">
+                              <div className="text-xs font-black text-emerald-600 mb-2">
+                                3. GREEN
+                              </div>
+                              <p className="text-sm text-slate-700 leading-7">{step.green}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* footer buttons */}
+            <div className="flex flex-col md:flex-row gap-3 justify-end">
+              <button
+                onClick={() => setShowResult(false)}
+                className="rounded-2xl bg-white border border-slate-300 px-5 py-3 font-bold text-slate-700 hover:bg-slate-50"
+              >
+                回答を見直す
+              </button>
+              <button
+                onClick={handleReset}
+                className="rounded-2xl bg-slate-900 text-white px-5 py-3 font-bold hover:bg-slate-800 inline-flex items-center justify-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                すべてリセット
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* FORM */}
+        {!showResult && (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* course select */}
+            <section className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 md:p-8">
+              <SectionHeader
+                title="次回ラウンド予定のコースを選択"
+                tag="COURSE SELECT"
+                sub="診断結果を次回ラウンドに落とし込むため、コースを1つ選んでください。"
+              />
+              <div className="space-y-3">
+                {COURSES.map((course) => {
+                  const active = selectedCourseId === course.id;
+                  return (
+                    <button
+                      type="button"
+                      key={course.id}
+                      onClick={() => setSelectedCourseId(course.id)}
+                      className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${
+                        active
+                          ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                          : "border-slate-200 bg-white hover:border-emerald-300 hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <div className="font-black text-lg text-slate-900">{course.name}</div>
+                          <p className="text-sm text-slate-600 mt-1">{course.description}</p>
+                        </div>
+                        <ChevronRight
+                          className={`shrink-0 mt-1 ${
+                            active ? "text-emerald-600" : "text-slate-400"
+                          }`}
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* question sections */}
+            {sections.map((section, idx) => (
+              <section
+                key={idx}
+                className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 md:p-8"
+              >
+                <SectionHeader title={section.title} tag={section.tag} sub={section.sub} />
+                <div>
+                  {section.questions.map((q) => (
+                    <QuestionCard
+                      key={q.id}
+                      q={q}
+                      selectedValue={answers[q.id]}
+                      onChange={handleAnswer}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            {/* email */}
+            <section className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 md:p-8">
+              <SectionHeader
+                title="診断結果をメールで受け取る"
+                tag="OPTIONAL"
+                sub="現状は入力欄のみです。実運用時はResend / SendGrid / Firebase Functionsなどで送信処理を接続してください。"
+              />
+              <div>
+                <label className="text-sm font-bold text-slate-700 mb-2 block">
+                  メールアドレス
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="email"
+                    className="w-full rounded-2xl border border-slate-300 bg-white py-4 pl-12 pr-4 outline-none focus:ring-4 focus:ring-slate-200 focus:border-slate-400"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* submit */}
+            <div className="flex flex-col md:flex-row gap-3 justify-end">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="rounded-2xl bg-slate-200 text-slate-800 px-5 py-4 font-black hover:bg-slate-300"
+              >
+                リセット
+              </button>
+              <button
+                type="submit"
+                className="rounded-2xl bg-slate-900 text-white px-6 py-4 font-black hover:bg-slate-800 shadow-lg"
+              >
+                診断結果を見る
+              </button>
+            </div>
+          </form>
+        )}
+      </main>
+    </div>
+  );
+}
