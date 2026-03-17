@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ゴルフDNA診断</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>ゴルフDNA診断</h1>
+    <p>50問の質問に答えてあなたのゴルフタイプを分析します</p>
+
+    <form id="form">
+      <label>平均スコア</label>
+      <select id="score">
+        <option>110以上</option>
+        <option>100〜109</option>
+        <option>90〜99</option>
+        <option>89以下</option>
+      </select>
+
+      <label>ミスの傾向</label>
+      <select id="miss">
+        <option>スライス</option>
+        <option>フック</option>
+        <option>ミート率低い</option>
+      </select>
+
+      <input type="email" id="email" placeholder="メールアドレス" required />
+
+      <button type="submit">診断する</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
