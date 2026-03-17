@@ -97,6 +97,7 @@
       border-radius: 12px;
       padding: 12px;
       background: #fbfdff;
+      cursor: pointer;
     }
     .option input {
       margin-top: 4px;
@@ -136,6 +137,20 @@
       font-weight: 700;
       color: #111827;
       margin-bottom: 8px;
+    }
+    .affiliate-card {
+      border: 1px solid #dbe4ee;
+      background: #f8fbff;
+    }
+    .affiliate-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 16px;
+      background: #bf0000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 700;
     }
     ul, ol {
       padding-left: 20px;
@@ -243,6 +258,12 @@
       <div class="result-card">
         <h3>おすすめ練習プラン</h3>
         <ol id="trainingPlan"></ol>
+      </div>
+
+      <div class="result-card affiliate-card" id="affiliateCard">
+        <h3 id="affiliateTitle"></h3>
+        <p id="affiliateText"></p>
+        <a id="affiliateLink" href="#" target="_blank" rel="noopener noreferrer" class="affiliate-button">楽天でおすすめ商品を見る</a>
       </div>
     </section>
   </div>
@@ -499,6 +520,29 @@
       }
     ];
 
+    const affiliateLinks = {
+      aggressive: {
+        title: "おすすめドライバー",
+        text: "スライスや右へのミスを減らしたい方には、つかまりやすく直進性の高いドライバーがおすすめです。",
+        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa5e79.a1ce0955.51fa5e7a.66ada583/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolffujico%2Ftm-dr-sim2ms%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
+      },
+      steady: {
+        title: "おすすめユーティリティ",
+        text: "安定感をさらに高めたい方には、ミスに強く球が上がりやすいユーティリティがおすすめです。",
+        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa650e.03d1097e.51fa650f.70d909ab/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcallawaygolf%2Fbp_007143_el4c%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
+      },
+      feel: {
+        title: "おすすめパター",
+        text: "距離感やタッチを改善したい方には、フィーリングを出しやすいパターがおすすめです。",
+        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa675d.19d21a30.51fa675e.9951aad8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolfpartner-2%2Fodyssey-putter-049%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
+      },
+      technical: {
+        title: "おすすめパター",
+        text: "再現性を高めたい方には、シンプルで直進性の高いピン型パターがおすすめです。",
+        url: "https://hb.afl.rakuten.co.jp/ichiba/51fa6f36.5f20f680.51fa6f37.91c34ab9/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Feirigoods%2Fgef-05%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
+      }
+    };
+
     const recommendations = {
       fundamentals: {
         name: "基礎・現状把握",
@@ -649,6 +693,11 @@
         document.getElementById(`issue${idx + 1}Actions`).innerHTML =
           recommendations[key].actions.map(a => `<li>${a}</li>`).join("");
       });
+
+      const picked = affiliateLinks[profile];
+      document.getElementById("affiliateTitle").textContent = picked.title;
+      document.getElementById("affiliateText").textContent = picked.text;
+      document.getElementById("affiliateLink").href = picked.url;
 
       const plan = [
         "Day1：トップ課題の基礎ドリルを30分",
