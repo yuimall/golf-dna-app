@@ -2,39 +2,690 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ゴルフDNA診断</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero, .chapter, .result-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      background: #111827;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 32px;
+      line-height: 1.3;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .sub {
+      color: #4b5563;
+      margin-bottom: 18px;
+    }
+    .progress-wrap {
+      margin-top: 18px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #374151;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #111827, #2563eb);
+      transition: width 0.2s ease;
+    }
+    .question {
+      padding: 16px 0;
+      border-top: 1px solid #edf2f7;
+    }
+    .question:first-child {
+      border-top: none;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid #dbe4ee;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+    .option input {
+      margin-top: 4px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #111827;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .result {
+      display: none;
+      margin-top: 24px;
+    }
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .issue-title {
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin: 8px 0 0;
+    }
+    .result-type {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 16px; }
+      h1 { font-size: 26px; }
+      .grid3 { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>ゴルフDNA診断</h1>
-    <p>50問の質問に答えてあなたのゴルフタイプを分析します</p>
+    <section class="hero">
+      <span class="badge">50問診断</span>
+      <h1>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</h1>
+      <p class="sub">
+        50の質問から、あなたのゴルフの傾向（スイング、ショートゲーム、メンタル、マネジメント）を分析し、
+        最適なフィードバックを提供します。直感で当てはまるものを選んでください。
+      </p>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>回答進捗</span>
+          <strong id="progressText">0 / 50</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
 
-    <form id="form">
-      <label>平均スコア</label>
-      <select id="score">
-        <option>110以上</option>
-        <option>100〜109</option>
-        <option>90〜99</option>
-        <option>89以下</option>
-      </select>
+    <form id="quizForm">
+      <section class="chapter">
+        <h2>第1章：現状とプレースタイル</h2>
+        <div id="chapter1"></div>
+      </section>
 
-      <label>ミスの傾向</label>
-      <select id="miss">
-        <option>スライス</option>
-        <option>フック</option>
-        <option>ミート率低い</option>
-      </select>
+      <section class="chapter">
+        <h2>第2章：ドライビング＆フルスイング（物理と軌道の解析）</h2>
+        <div id="chapter2"></div>
+      </section>
 
-      <input type="email" id="email" placeholder="メールアドレス" required />
+      <section class="chapter">
+        <h2>第3章：アプローチ＆バンカー（ショートゲームの精度）</h2>
+        <div id="chapter3"></div>
+      </section>
 
-      <button type="submit">診断する</button>
+      <section class="chapter">
+        <h2>第4章：パッティング（スコアメイクの要）</h2>
+        <div id="chapter4"></div>
+      </section>
+
+      <section class="chapter">
+        <h2>第5章：コースマネジメント・メンタル戦略</h2>
+        <div id="chapter5"></div>
+      </section>
+
+      <section class="chapter">
+        <h2>診断結果をメールで受け取る</h2>
+        <p class="sub">今は入力欄のみです。次にメール自動送信を追加できます。</p>
+        <div class="question">
+          <div class="question-title">メールアドレス</div>
+          <input type="email" id="email" placeholder="example@email.com" style="width:100%;padding:12px 14px;border:1px solid #cbd5e1;border-radius:12px;font-size:15px;">
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn-secondary" id="resetBtn">リセット</button>
+        <button type="submit" class="btn-primary">診断結果を見る</button>
+      </div>
     </form>
 
-    <div id="result"></div>
+    <section class="result" id="resultSection">
+      <div class="result-card">
+        <h2>診断結果</h2>
+        <p class="result-type">あなたのタイプ：<span id="profileType"></span></p>
+        <p id="profileMessage"></p>
+      </div>
+
+      <div class="grid3">
+        <div class="result-card">
+          <h3>課題①</h3>
+          <div class="issue-title" id="issue1"></div>
+          <ul id="issue1Actions"></ul>
+        </div>
+        <div class="result-card">
+          <h3>課題②</h3>
+          <div class="issue-title" id="issue2"></div>
+          <ul id="issue2Actions"></ul>
+        </div>
+        <div class="result-card">
+          <h3>課題③</h3>
+          <div class="issue-title" id="issue3"></div>
+          <ul id="issue3Actions"></ul>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>おすすめ練習プラン</h3>
+        <ol id="trainingPlan"></ol>
+      </div>
+    </section>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const sections = [
+      {
+        target: "chapter1",
+        questions: [
+          { id: 1, text: "現在の平均スコアは？", options: [
+            { label: "110以上", score: { fundamentals: 2 } },
+            { label: "100〜109", score: { fundamentals: 1 } },
+            { label: "90〜99", score: { fundamentals: 0.5 } },
+            { label: "89以下", score: { fundamentals: 0 } }
+          ]},
+          { id: 2, text: "最もスコアを崩している原因は何だと感じますか？", options: [
+            { label: "ティーショットの乱れ", score: { swing: 2 } },
+            { label: "アイアンのダフリ・トップ", score: { swing: 2 } },
+            { label: "アプローチ・パター", score: { shortGame: 1, putting: 1 } }
+          ]},
+          { id: 3, text: "ゴルフの練習（打ちっぱなし等）は月に何回行きますか？", options: [
+            { label: "0〜1回", score: { fundamentals: 2 } },
+            { label: "2〜4回", score: { fundamentals: 1 } },
+            { label: "5回以上", score: { fundamentals: 0 } }
+          ]},
+          { id: 4, text: "自分のスイングを動画撮影して客観的にチェックしていますか？", options: [
+            { label: "はい", score: { fundamentals: 0, technical: 1 } },
+            { label: "いいえ", score: { fundamentals: 2 } },
+            { label: "たまにする", score: { fundamentals: 1 } }
+          ]},
+          { id: 5, text: "スイング中、最も力みを感じる部位はどこですか？", options: [
+            { label: "グリップ・腕", score: { mental: 1, swing: 1 } },
+            { label: "肩・上半身", score: { mental: 1, swing: 1 } },
+            { label: "特に力みはない", score: { mental: 0 } }
+          ]},
+          { id: 6, text: "自分の各番手の「キャリー（落下点までの距離）」を正確に把握していますか？", options: [
+            { label: "はい", score: { fundamentals: 0, management: 0 } },
+            { label: "いいえ", score: { fundamentals: 2, management: 1 } },
+            { label: "大体わかる", score: { fundamentals: 1, management: 0.5 } }
+          ]},
+          { id: 7, text: "クラブのセッティングは自分の力に合っていると感じますか？", options: [
+            { label: "はい", score: { fundamentals: 0 } },
+            { label: "いいえ", score: { fundamentals: 2, swing: 1 } },
+            { label: "わからない", score: { fundamentals: 1.5 } }
+          ]},
+          { id: 8, text: "ラウンド前、ストレッチに10分以上時間をかけていますか？", options: [
+            { label: "はい", score: { fitness: 0 } },
+            { label: "いいえ", score: { fitness: 2 } }
+          ]},
+          { id: 9, text: "ラウンド後半（残り4ホール）で、下半身の疲れやスイングの乱れを感じますか？", options: [
+            { label: "はい", score: { fitness: 2 } },
+            { label: "いいえ", score: { fitness: 0 } }
+          ]},
+          { id: 10, text: "ミスショット直後、すぐに原因を自己分析できますか？", options: [
+            { label: "できる", score: { fundamentals: 0, technical: 1 } },
+            { label: "感情的になってしまう", score: { mental: 2 } },
+            { label: "わからない", score: { fundamentals: 1.5 } }
+          ]}
+        ]
+      },
+      {
+        target: "chapter2",
+        questions: [
+          { id: 11, text: "ドライバーで一番多い致命的なミスは？", options: [
+            { label: "スライス/右プッシュ", score: { swing: 2 } },
+            { label: "フック/左引っかけ", score: { swing: 2 } },
+            { label: "テンプラ/チョロ", score: { swing: 2, fundamentals: 1 } }
+          ]},
+          { id: 12, text: "フィニッシュの姿勢で、バランスよく3秒間ピタッと止まれますか？", options: [
+            { label: "はい", score: { swing: 0, fitness: 0 } },
+            { label: "いいえ", score: { swing: 1.5, fitness: 1 } },
+            { label: "時々止まれる", score: { swing: 1, fitness: 0.5 } }
+          ]},
+          { id: 13, text: "ダウンスイングの切り返しは、どこから動かしていますか？", options: [
+            { label: "腕・手元から", score: { swing: 2 } },
+            { label: "腰・下半身から", score: { swing: 0 } },
+            { label: "意識していない", score: { swing: 1.5 } }
+          ]},
+          { id: 14, text: "自分のスイング軌道（アウトサイドイン等）を理解していますか？", options: [
+            { label: "はい", score: { swing: 0, technical: 1 } },
+            { label: "いいえ", score: { swing: 2 } }
+          ]},
+          { id: 15, text: "アイアンを打った後、ボールの先の芝（ターフ）が取れますか？", options: [
+            { label: "手前をダフる", score: { swing: 2 } },
+            { label: "先が綺麗に取れる", score: { swing: 0 } },
+            { label: "払い打ちで取らない", score: { swing: 1 } }
+          ]},
+          { id: 16, text: "アドレス時、右肩が左肩よりも前に出ている感覚はありますか？", options: [
+            { label: "はい", score: { swing: 1.5 } },
+            { label: "いいえ", score: { swing: 0 } }
+          ]},
+          { id: 17, text: "スイング中、頭が大きく動いている（スウェー）と言われますか？", options: [
+            { label: "はい", score: { swing: 2, fitness: 0.5 } },
+            { label: "いいえ", score: { swing: 0 } }
+          ]},
+          { id: 18, text: "クラブの芯でボールを捉える確率はどれくらいですか？", options: [
+            { label: "30%以下", score: { swing: 2 } },
+            { label: "30〜70%", score: { swing: 1 } },
+            { label: "70%以上", score: { swing: 0 } }
+          ]},
+          { id: 19, text: "傾斜地（つま先上がり等）での打ち方のセオリーを理解していますか？", options: [
+            { label: "はい", score: { management: 0, fundamentals: 0 } },
+            { label: "いいえ", score: { management: 1.5, fundamentals: 1 } },
+            { label: "少しわかる", score: { management: 1 } }
+          ]},
+          { id: 20, text: "フェアウェイウッドはコースで自信を持って使えますか？", options: [
+            { label: "はい", score: { swing: 0 } },
+            { label: "いいえ", score: { swing: 1.5 } },
+            { label: "使わない", score: { swing: 1, management: 0.5 } }
+          ]}
+        ]
+      },
+      {
+        target: "chapter3",
+        questions: [
+          { id: 21, text: "グリーン周り（残り30y）から、平均何打で上がれますか？", options: [
+            { label: "4打以上", score: { shortGame: 2, putting: 0.5 } },
+            { label: "3打", score: { shortGame: 1 } },
+            { label: "2打", score: { shortGame: 0 } }
+          ]},
+          { id: 22, text: "アプローチでの一番のミスは？", options: [
+            { label: "ザックリ・ダフリ", score: { shortGame: 2 } },
+            { label: "トップ・ホームラン", score: { shortGame: 2 } },
+            { label: "距離感のミス", score: { shortGame: 1.5 } }
+          ]},
+          { id: 23, text: "アプローチを打つ際、体重移動はしていますか？", options: [
+            { label: "はい", score: { shortGame: 1.5 } },
+            { label: "いいえ[左足体重固定]", score: { shortGame: 0 } }
+          ]},
+          { id: 24, text: "状況に応じて、上げて転がす・転がすを打ち分けていますか？", options: [
+            { label: "はい", score: { shortGame: 0, management: 0 } },
+            { label: "いいえ", score: { shortGame: 1.5, management: 0.5 } },
+            { label: "いつも同じ打ち方", score: { shortGame: 2, management: 0.5 } }
+          ]},
+          { id: 25, text: "アプローチの距離感は「振り幅の基準」で決めていますか？", options: [
+            { label: "はい", score: { shortGame: 0, technical: 1 } },
+            { label: "いいえ[感覚で打つ]", score: { shortGame: 1.5 } }
+          ]},
+          { id: 26, text: "バンカーは1発で脱出できる確率が70%以上ありますか？", options: [
+            { label: "はい", score: { shortGame: 0 } },
+            { label: "いいえ", score: { shortGame: 2 } }
+          ]},
+          { id: 27, text: "バンカーショットの際、フェースを開いて構えることができますか？", options: [
+            { label: "はい", score: { shortGame: 0 } },
+            { label: "いいえ", score: { shortGame: 1.5 } }
+          ]},
+          { id: 28, text: "グリーンエッジから、ウェッジではなくパターを使うことに抵抗はありますか？", options: [
+            { label: "ある", score: { management: 1, shortGame: 1 } },
+            { label: "ない", score: { management: 0, shortGame: 0 } }
+          ]},
+          { id: 29, text: "アプローチのインパクト時、スイングが緩む（減速する）癖はありますか？", options: [
+            { label: "はい", score: { shortGame: 2, mental: 0.5 } },
+            { label: "いいえ", score: { shortGame: 0 } }
+          ]},
+          { id: 30, text: "ウェッジのバンス（ソールの出っ張り）を滑らせて打つ感覚がわかりますか？", options: [
+            { label: "はい", score: { shortGame: 0 } },
+            { label: "いいえ", score: { shortGame: 1.5 } }
+          ]}
+        ]
+      },
+      {
+        target: "chapter4",
+        questions: [
+          { id: 31, text: "1ラウンドの平均パット数は？", options: [
+            { label: "40以上", score: { putting: 2 } },
+            { label: "36〜39", score: { putting: 1 } },
+            { label: "35以下", score: { putting: 0 } }
+          ]},
+          { id: 32, text: "3パットをしてしまう一番の原因は？", options: [
+            { label: "1打目の距離感エラー", score: { putting: 1.5 } },
+            { label: "短いパットを外す", score: { putting: 1.5, mental: 0.5 } }
+          ]},
+          { id: 33, text: "上りと下りのライン、どちらが苦手ですか？", options: [
+            { label: "上り", score: { putting: 1 } },
+            { label: "下り", score: { putting: 1.5 } },
+            { label: "どちらも苦手", score: { putting: 2 } }
+          ]},
+          { id: 34, text: "1mのパットを打つ際、カップの音を聞くまで顔を残せていますか？", options: [
+            { label: "はい", score: { putting: 0 } },
+            { label: "いいえ[すぐ顔が上がる]", score: { putting: 1.5 } }
+          ]},
+          { id: 35, text: "ストローク中、手首の角度が折れたり動いたりしてしまいますか？", options: [
+            { label: "はい", score: { putting: 1.5 } },
+            { label: "いいえ[固定できている]", score: { putting: 0 } }
+          ]},
+          { id: 36, text: "ラインを読む際、ボールの後方以外（横やカップ側）からも確認しますか？", options: [
+            { label: "はい", score: { putting: 0, technical: 1 } },
+            { label: "いいえ", score: { putting: 1 } }
+          ]},
+          { id: 37, text: "パター専用のグリップ（握り方）をしていますか？", options: [
+            { label: "はい", score: { putting: 0 } },
+            { label: "いいえ[ショットと同じ]", score: { putting: 1 } }
+          ]},
+          { id: 38, text: "ラウンド前の練習で、その日の「基準となる振り幅の距離」を測っていますか？", options: [
+            { label: "はい", score: { putting: 0, fundamentals: 0 } },
+            { label: "いいえ", score: { putting: 1.5, fundamentals: 0.5 } }
+          ]},
+          { id: 39, text: "常にパターの芯（スイートスポット）で打つことを意識していますか？", options: [
+            { label: "はい", score: { putting: 0 } },
+            { label: "いいえ", score: { putting: 1 } }
+          ]},
+          { id: 40, text: "ボールのライン（線）をターゲットに毎回合わせてセットしていますか？", options: [
+            { label: "はい", score: { putting: 0 } },
+            { label: "いいえ", score: { putting: 1 } },
+            { label: "線は引いていない", score: { putting: 1.5 } }
+          ]}
+        ]
+      },
+      {
+        target: "chapter5",
+        questions: [
+          { id: 41, text: "打つ前、ハザード（池やバンカー）を「避けるターゲット」として設定していますか？", options: [
+            { label: "はい", score: { management: 0 } },
+            { label: "いいえ[ピンしか見ない]", score: { management: 1.5 } }
+          ]},
+          { id: 42, text: "ティーショットをミスした後、無理にグリーンを狙ってしまいますか？", options: [
+            { label: "はい", score: { management: 2, mental: 0.5 } },
+            { label: "いいえ[確実に刻む]", score: { management: 0 } }
+          ]},
+          { id: 43, text: "自分の「得意な距離」を残すように、逆算してレイアップ（刻む）できますか？", options: [
+            { label: "はい", score: { management: 0 } },
+            { label: "いいえ", score: { management: 1.5, fundamentals: 0.5 } }
+          ]},
+          { id: 44, text: "朝イチのティーショットや人が見ている場面で、スインリズムが早くなりますか？", options: [
+            { label: "はい", score: { mental: 2 } },
+            { label: "いいえ", score: { mental: 0 } }
+          ]},
+          { id: 45, text: "打つ前のプレショット・ルーティンを、毎回同じリズムで行っていますか？", options: [
+            { label: "はい", score: { mental: 0, management: 0 } },
+            { label: "いいえ", score: { mental: 1.5 } }
+          ]},
+          { id: 46, text: "風向きや高低差をしっかり計算して番手を選んでいますか？", options: [
+            { label: "はい", score: { management: 0 } },
+            { label: "いいえ", score: { management: 1.5 } },
+            { label: "大体で選ぶ", score: { management: 1 } }
+          ]},
+          { id: 47, text: "大叩きした後、次のホールまで気分を引きずってしまいますか？", options: [
+            { label: "はい", score: { mental: 2 } },
+            { label: "いいえ[すぐ切り替えられる]", score: { mental: 0 } }
+          ]},
+          { id: 48, text: "セカンドショットを打つ際、ピンの位置（手前・奥）を考慮して「外しても安全な場所」をあらかじめ決めてから打っていますか？", options: [
+            { label: "はい", score: { management: 0 } },
+            { label: "いいえ[常にピンを狙う]", score: { management: 1.5 } }
+          ]},
+          { id: 49, text: "林の中などのトラブル時、わずかな隙間を狙うよりも、まずはフェアウェイに確実に出す（横や後ろに出す）冷静な選択ができますか？", options: [
+            { label: "はい", score: { management: 0, mental: 0 } },
+            { label: "いいえ[つい前を狙ってしまう]", score: { management: 2, mental: 0.5 } }
+          ]},
+          { id: 50, text: "ラウンド中、自分のトータルスコア（現在何オーバーか等）を常に計算してしまい、それがプレッシャーに繋がるタイプですか？", options: [
+            { label: "はい", score: { mental: 2 } },
+            { label: "いいえ[目の前の1打に集中している]", score: { mental: 0 } }
+          ]}
+        ]
+      }
+    ];
+
+    const recommendations = {
+      fundamentals: {
+        name: "基礎・現状把握",
+        actions: [
+          "各番手のキャリーを記録し、飛距離表を作る",
+          "週1回スイング動画を撮影する",
+          "ミスの傾向を練習メモに残す"
+        ]
+      },
+      swing: {
+        name: "フルスイング",
+        actions: [
+          "ハーフスイングでミート率重視の練習を行う",
+          "フィニッシュ3秒停止ドリルを行う",
+          "下半身主導の切り返しを意識する"
+        ]
+      },
+      shortGame: {
+        name: "アプローチ・バンカー",
+        actions: [
+          "10y・20y・30yの振り幅基準を作る",
+          "左足体重固定のアプローチ練習を行う",
+          "バンカーはフェースを開く練習を増やす"
+        ]
+      },
+      putting: {
+        name: "パッティング",
+        actions: [
+          "1mのショートパット反復",
+          "5m・8m・10mの距離感合わせ",
+          "毎回同じ打ち出し方向を作る"
+        ]
+      },
+      mental: {
+        name: "メンタル",
+        actions: [
+          "ミス後の切り替えルーティンを作る",
+          "打つ前の呼吸を一定にする",
+          "スコアではなく次の1打に集中する"
+        ]
+      },
+      management: {
+        name: "コースマネジメント",
+        actions: [
+          "危険エリアを先に外す判断を徹底する",
+          "得意距離を残すレイアップを覚える",
+          "トラブル時は無理に前へ出さない"
+        ]
+      },
+      fitness: {
+        name: "体力・再現性",
+        actions: [
+          "ラウンド前に10分の動的ストレッチ",
+          "下半身の安定性トレーニングを行う",
+          "後半を想定した連続素振りを行う"
+        ]
+      }
+    };
+
+    const profileMessages = {
+      aggressive: "攻め志向が強く、ハマるとスコアが出やすい反面、無理な判断で崩れやすいタイプです。",
+      steady: "堅実志向で大崩れしにくいタイプです。再現性を高めるとさらに安定します。",
+      feel: "感覚派で流れに乗ると強いタイプです。基準作りを行うと安定感が増します。",
+      technical: "理論派で改善意識が高いタイプです。考えすぎず反復で固めるのが有効です。"
+    };
+
+    function renderQuestions() {
+      sections.forEach(section => {
+        const container = document.getElementById(section.target);
+        container.innerHTML = "";
+        section.questions.forEach(q => {
+          const div = document.createElement("div");
+          div.className = "question";
+          div.innerHTML = `
+            <div class="question-title">Q${q.id}. ${q.text}</div>
+            <div class="options">
+              ${q.options.map((opt, i) => `
+                <label class="option">
+                  <input type="radio" name="q${q.id}" value="${i}">
+                  <span>${opt.label}</span>
+                </label>
+              `).join("")}
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    function updateProgress() {
+      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+      document.getElementById("progressText").textContent = `${answered} / 50`;
+      document.getElementById("progressFill").style.width = `${answered * 2}%`;
+    }
+
+    function getTotals() {
+      const totals = {
+        fundamentals: 0,
+        swing: 0,
+        shortGame: 0,
+        putting: 0,
+        mental: 0,
+        management: 0,
+        fitness: 0,
+        technical: 0
+      };
+
+      sections.forEach(section => {
+        section.questions.forEach(q => {
+          const checked = document.querySelector(`input[name="q${q.id}"]:checked`);
+          if (!checked) return;
+          const selected = q.options[Number(checked.value)];
+          Object.entries(selected.score).forEach(([k, v]) => {
+            totals[k] += v;
+          });
+        });
+      });
+
+      return totals;
+    }
+
+    function getProfile(totals) {
+      const aggressive = totals.management + totals.mental > 6 ? 1 : 0;
+      const steady = totals.management < 4 && totals.mental < 4 ? 1 : 0;
+      const feel = totals.shortGame > 4 && totals.technical < 2 ? 1 : 0;
+      const technical = totals.technical >= 2 ? 1 : 0;
+
+      if (technical) return "technical";
+      if (aggressive) return "aggressive";
+      if (feel) return "feel";
+      return "steady";
+    }
+
+    function renderResults(totals) {
+      const ranked = Object.entries(totals)
+        .filter(([key]) => key !== "technical")
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const profile = getProfile(totals);
+
+      document.getElementById("profileType").textContent = profile.toUpperCase();
+      document.getElementById("profileMessage").textContent = profileMessages[profile];
+
+      ranked.forEach((item, idx) => {
+        const key = item[0];
+        document.getElementById(`issue${idx + 1}`).textContent = recommendations[key].name;
+        document.getElementById(`issue${idx + 1}Actions`).innerHTML =
+          recommendations[key].actions.map(a => `<li>${a}</li>`).join("");
+      });
+
+      const plan = [
+        "Day1：トップ課題の基礎ドリルを30分",
+        "Day2：動画撮影をしながら再現性チェック",
+        "Day3：ショートゲーム重点練習",
+        "Day4：パット距離感合わせ",
+        "Day5：コースマネジメントの見直し",
+        "Day6：プレッシャー下でのルーティン練習",
+        "Day7：総合テストと振り返り"
+      ];
+      document.getElementById("trainingPlan").innerHTML = plan.map(p => `<li>${p}</li>`).join("");
+      document.getElementById("resultSection").style.display = "block";
+      window.scrollTo({ top: document.getElementById("resultSection").offsetTop - 20, behavior: "smooth" });
+    }
+
+    renderQuestions();
+    document.addEventListener("change", updateProgress);
+
+    document.getElementById("quizForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+      if (answered < 50) {
+        alert("50問すべて回答してください。");
+        return;
+      }
+      const totals = getTotals();
+      renderResults(totals);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", function() {
+      document.getElementById("quizForm").reset();
+      document.getElementById("resultSection").style.display = "none";
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    updateProgress();
+  </script>
 </body>
 </html>
