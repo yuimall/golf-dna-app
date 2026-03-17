@@ -6,177 +6,457 @@
   <title>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</title>
   <style>
     * { box-sizing: border-box; }
+
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2c;
+      --panel: rgba(255,255,255,0.92);
+      --panel-strong: #ffffff;
+      --text: #0f172a;
+      --text-soft: #475569;
+      --line: rgba(15, 23, 42, 0.08);
+      --gold: #d4af37;
+      --gold-soft: #f2dd93;
+      --red: #b30000;
+      --red-strong: #d10000;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+      --radius-xl: 26px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
-      line-height: 1.6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(212,175,55,0.10), transparent 22%),
+        radial-gradient(circle at top right, rgba(37,99,235,0.08), transparent 20%),
+        linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+      color: var(--text);
+      line-height: 1.7;
     }
+
     .container {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 28px 18px 80px;
     }
-    .hero, .chapter, .result-card {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      padding: 24px;
-      margin-bottom: 20px;
+
+    .hero,
+    .chapter,
+    .result-card {
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 22px;
     }
-    .badge {
-      display: inline-block;
-      background: #111827;
+
+    .hero {
+      background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.24), transparent 26%),
+        linear-gradient(135deg, #0f172a 0%, #162033 48%, #1e293b 100%);
       color: #fff;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
     }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.03) 40%, transparent 80%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+      color: #111827;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 8px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 18px rgba(212,175,55,0.18);
+    }
+
     h1 {
       margin: 0 0 12px;
-      font-size: 32px;
-      line-height: 1.3;
+      font-size: 38px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
     }
+
     h2 {
       margin: 0 0 10px;
-      font-size: 24px;
+      font-size: 25px;
+      letter-spacing: -0.02em;
     }
+
     h3 {
       margin: 0 0 10px;
-      font-size: 18px;
+      font-size: 20px;
+      letter-spacing: -0.01em;
     }
-    .sub {
-      color: #4b5563;
-      margin-bottom: 18px;
+
+    .hero .sub {
+      color: rgba(255,255,255,0.84);
+      margin: 0 0 20px;
+      max-width: 800px;
+      font-size: 15px;
     }
+
     .progress-wrap {
       margin-top: 18px;
     }
+
     .progress-label {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
+      align-items: center;
+      margin-bottom: 10px;
       font-size: 14px;
-      color: #374151;
+      color: rgba(255,255,255,0.82);
     }
+
     .progress-bar {
       width: 100%;
-      height: 12px;
-      background: #e5e7eb;
+      height: 14px;
+      background: rgba(255,255,255,0.12);
       border-radius: 999px;
       overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
     }
+
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #111827, #2563eb);
-      transition: width 0.2s ease;
+      background: linear-gradient(90deg, var(--gold), #f8e6aa);
+      transition: width 0.25s ease;
+      box-shadow: 0 0 24px rgba(212,175,55,0.42);
     }
+
+    .chapter {
+      background: rgba(255,255,255,0.94);
+    }
+
+    .chapter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chapter-header h2 {
+      margin-bottom: 0;
+    }
+
+    .chapter-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a6a00;
+      background: rgba(212,175,55,0.14);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .chapter-sub {
+      color: var(--text-soft);
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
     .question {
-      padding: 16px 0;
-      border-top: 1px solid #edf2f7;
+      padding: 18px 0;
+      border-top: 1px solid #e8eef6;
     }
+
     .question:first-child {
       border-top: none;
     }
+
     .question-title {
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-weight: 800;
+      margin-bottom: 13px;
+      color: #0f172a;
+      font-size: 16px;
+      letter-spacing: -0.01em;
     }
+
     .options {
       display: grid;
       gap: 10px;
     }
+
     .option {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
       border: 1px solid #dbe4ee;
-      border-radius: 12px;
-      padding: 12px;
-      background: #fbfdff;
+      border-radius: 16px;
+      padding: 14px 15px;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
       cursor: pointer;
+      transition: all 0.18s ease;
+      box-shadow: 0 2px 8px rgba(15,23,42,0.03);
     }
+
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: #c8d3df;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+    }
+
     .option input {
       margin-top: 4px;
+      transform: scale(1.05);
+      accent-color: #111827;
     }
+
+    .option span {
+      color: #0f172a;
+      font-size: 15px;
+    }
+
+    .email-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      background: #fff;
+    }
+
+    .email-input:focus {
+      border-color: #94a3b8;
+      box-shadow: 0 0 0 4px rgba(148,163,184,0.15);
+    }
+
     .actions {
       display: flex;
       gap: 12px;
       justify-content: flex-end;
-      margin-top: 20px;
+      margin-top: 24px;
     }
+
     button {
       border: none;
-      border-radius: 12px;
-      padding: 14px 18px;
+      border-radius: 16px;
+      padding: 15px 20px;
       font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
     }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
     .btn-primary {
-      background: #111827;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
       color: #fff;
+      box-shadow: 0 14px 28px rgba(15,23,42,0.18);
     }
+
     .btn-secondary {
       background: #e5e7eb;
       color: #111827;
     }
+
     .result {
       display: none;
-      margin-top: 24px;
+      margin-top: 28px;
     }
+
+    .result-top {
+      background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.10), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+    }
+
+    .result-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #8a6a00;
+      background: rgba(212,175,55,0.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      margin-bottom: 14px;
+    }
+
+    .result-type {
+      font-size: 30px;
+      font-weight: 900;
+      margin: 0 0 10px;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+    }
+
+    .result-summary {
+      font-size: 16px;
+      color: #334155;
+      margin: 0;
+    }
+
     .grid3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 20px 0;
+      gap: 18px;
+      margin: 22px 0;
     }
+
     .issue-title {
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 8px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
+      font-size: 19px;
+      letter-spacing: -0.01em;
     }
-    .affiliate-card {
-      border: 1px solid #dbe4ee;
-      background: #f8fbff;
-    }
-    .affiliate-button {
+
+    .issue-badge {
       display: inline-block;
-      margin-top: 10px;
-      padding: 12px 16px;
-      background: #bf0000;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 5px 8px;
+      border-radius: 999px;
+      margin-bottom: 12px;
     }
+
     ul, ol {
       padding-left: 20px;
       margin: 8px 0 0;
     }
-    .result-type {
-      font-size: 18px;
-      font-weight: 700;
+
+    li {
+      margin-bottom: 8px;
+      color: #334155;
     }
+
+    .affiliate-card {
+      border: 1px solid rgba(191,0,0,0.08);
+      background:
+        radial-gradient(circle at top right, rgba(191,0,0,0.06), transparent 24%),
+        linear-gradient(180deg, #fff 0%, #fff8f8 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .affiliate-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .affiliate-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #b30000;
+      background: rgba(179,0,0,0.08);
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .affiliate-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 0 0 10px;
+      line-height: 1.25;
+      color: #111827;
+      letter-spacing: -0.03em;
+    }
+
+    .affiliate-text {
+      font-size: 16px;
+      color: #334155;
+      margin: 0 0 14px;
+      max-width: 820px;
+    }
+
+    .affiliate-button {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--red), var(--red-strong));
+      color: #fff;
+      text-decoration: none;
+      border-radius: 16px;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 18px 30px rgba(179,0,0,0.20);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .affiliate-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 34px rgba(179,0,0,0.24);
+    }
+
+    .affiliate-sub {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .result-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(15,23,42,0.10), transparent);
+      margin: 20px 0;
+    }
+
+    @media (max-width: 900px) {
+      .grid3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 768px) {
       .container { padding: 16px; }
-      h1 { font-size: 26px; }
-      .grid3 { grid-template-columns: 1fr; }
+      h1 { font-size: 29px; }
+      h2 { font-size: 22px; }
+      .hero, .chapter, .result-card { padding: 22px; }
       .actions { flex-direction: column; }
       button { width: 100%; }
+      .affiliate-button { width: 100%; text-align: center; }
+      .result-type { font-size: 24px; }
+      .affiliate-title { font-size: 23px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <section class="hero">
-      <span class="badge">50問診断</span>
+      <span class="badge">PREMIUM GOLF ANALYSIS</span>
       <h1>ゴルフDNA診断：あなたの弱点と伸びしろを完全解析</h1>
       <p class="sub">
-        50の質問から、あなたのゴルフの傾向（スイング、ショートゲーム、メンタル、マネジメント）を分析し、
-        最適なフィードバックを提供します。直感で当てはまるものを選んでください。
+        50の質問から、あなたのゴルフ傾向を多角的に分析します。スイング、ショートゲーム、パッティング、
+        メンタル、コースマネジメントまで可視化し、最適な練習プランと今のあなたに合うおすすめクラブを提示します。
       </p>
       <div class="progress-wrap">
         <div class="progress-label">
@@ -191,36 +471,64 @@
 
     <form id="quizForm">
       <section class="chapter">
-        <h2>第1章：現状とプレースタイル</h2>
+        <div class="chapter-header">
+          <h2>第1章：現状とプレースタイル</h2>
+          <span class="chapter-tag">FOUNDATION</span>
+        </div>
+        <p class="chapter-sub">現状把握・再現性・基礎体力・自己認識をチェックします。</p>
         <div id="chapter1"></div>
       </section>
 
       <section class="chapter">
-        <h2>第2章：ドライビング＆フルスイング（物理と軌道の解析）</h2>
+        <div class="chapter-header">
+          <h2>第2章：ドライビング＆フルスイング（物理と軌道の解析）</h2>
+          <span class="chapter-tag">FULL SWING</span>
+        </div>
+        <p class="chapter-sub">軌道、インパクト、バランス、傾斜対応まで確認します。</p>
         <div id="chapter2"></div>
       </section>
 
       <section class="chapter">
-        <h2>第3章：アプローチ＆バンカー（ショートゲームの精度）</h2>
+        <div class="chapter-header">
+          <h2>第3章：アプローチ＆バンカー（ショートゲームの精度）</h2>
+          <span class="chapter-tag">SHORT GAME</span>
+        </div>
+        <p class="chapter-sub">寄せ・バンカー・距離感・打ち分けの精度を見ます。</p>
         <div id="chapter3"></div>
       </section>
 
       <section class="chapter">
-        <h2>第4章：パッティング（スコアメイクの要）</h2>
+        <div class="chapter-header">
+          <h2>第4章：パッティング（スコアメイクの要）</h2>
+          <span class="chapter-tag">PUTTING</span>
+        </div>
+        <p class="chapter-sub">距離感、ショートパット、打ち出し、ライン読みの傾向を分析します。</p>
         <div id="chapter4"></div>
       </section>
 
       <section class="chapter">
-        <h2>第5章：コースマネジメント・メンタル戦略</h2>
+        <div class="chapter-header">
+          <h2>第5章：コースマネジメント・メンタル戦略</h2>
+          <span class="chapter-tag">STRATEGY & MIND</span>
+        </div>
+        <p class="chapter-sub">判断力・感情コントロール・スコアメイクの思考をチェックします。</p>
         <div id="chapter5"></div>
       </section>
 
       <section class="chapter">
-        <h2>診断結果をメールで受け取る</h2>
-        <p class="sub">今は入力欄のみです。次にメール自動送信を追加できます。</p>
+        <div class="chapter-header">
+          <h2>診断結果をメールで受け取る</h2>
+          <span class="chapter-tag">OPTIONAL</span>
+        </div>
+        <p class="chapter-sub">今は入力欄のみです。次にメール自動送信機能を追加できます。</p>
         <div class="question">
           <div class="question-title">メールアドレス</div>
-          <input type="email" id="email" placeholder="example@email.com" style="width:100%;padding:12px 14px;border:1px solid #cbd5e1;border-radius:12px;font-size:15px;">
+          <input
+            type="email"
+            id="email"
+            class="email-input"
+            placeholder="example@email.com"
+          />
         </div>
       </section>
 
@@ -231,24 +539,27 @@
     </form>
 
     <section class="result" id="resultSection">
-      <div class="result-card">
-        <h2>診断結果</h2>
+      <div class="result-card result-top">
+        <div class="result-label">RESULT PROFILE</div>
         <p class="result-type">あなたのタイプ：<span id="profileType"></span></p>
-        <p id="profileMessage"></p>
+        <p class="result-summary" id="profileMessage"></p>
       </div>
 
       <div class="grid3">
         <div class="result-card">
+          <div class="issue-badge">TOP ISSUE 01</div>
           <h3>課題①</h3>
           <div class="issue-title" id="issue1"></div>
           <ul id="issue1Actions"></ul>
         </div>
         <div class="result-card">
+          <div class="issue-badge">TOP ISSUE 02</div>
           <h3>課題②</h3>
           <div class="issue-title" id="issue2"></div>
           <ul id="issue2Actions"></ul>
         </div>
         <div class="result-card">
+          <div class="issue-badge">TOP ISSUE 03</div>
           <h3>課題③</h3>
           <div class="issue-title" id="issue3"></div>
           <ul id="issue3Actions"></ul>
@@ -261,9 +572,17 @@
       </div>
 
       <div class="result-card affiliate-card" id="affiliateCard">
-        <h3 id="affiliateTitle"></h3>
-        <p id="affiliateText"></p>
-        <a id="affiliateLink" href="#" target="_blank" rel="noopener noreferrer" class="affiliate-button">楽天でおすすめ商品を見る</a>
+        <div class="affiliate-eyebrow">RECOMMENDED CLUB</div>
+        <h3 class="affiliate-title" id="affiliateTitle"></h3>
+        <p class="affiliate-text" id="affiliateText"></p>
+        <a
+          id="affiliateLink"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="affiliate-button"
+        >あなたに合うクラブを今すぐ確認する</a>
+        <div class="affiliate-sub">診断タイプとの相性を踏まえて、最初の1本として選びやすいモデルを表示しています。</div>
       </div>
     </section>
   </div>
@@ -299,7 +618,7 @@
             { label: "肩・上半身", score: { mental: 1, swing: 1 } },
             { label: "特に力みはない", score: { mental: 0 } }
           ]},
-          { id: 6, text: "自分の各番手の「キャリー（落下点までの距離）」を正確に把握していますか？", options: [
+          { id: 6, text: "自分の各番手の『キャリー（落下点までの距離）』を正確に把握していますか？", options: [
             { label: "はい", score: { fundamentals: 0, management: 0 } },
             { label: "いいえ", score: { fundamentals: 2, management: 1 } },
             { label: "大体わかる", score: { fundamentals: 1, management: 0.5 } }
@@ -398,7 +717,7 @@
             { label: "いいえ", score: { shortGame: 1.5, management: 0.5 } },
             { label: "いつも同じ打ち方", score: { shortGame: 2, management: 0.5 } }
           ]},
-          { id: 25, text: "アプローチの距離感は「振り幅の基準」で決めていますか？", options: [
+          { id: 25, text: "アプローチの距離感は『振り幅の基準』で決めていますか？", options: [
             { label: "はい", score: { shortGame: 0, technical: 1 } },
             { label: "いいえ[感覚で打つ]", score: { shortGame: 1.5 } }
           ]},
@@ -457,7 +776,7 @@
             { label: "はい", score: { putting: 0 } },
             { label: "いいえ[ショットと同じ]", score: { putting: 1 } }
           ]},
-          { id: 38, text: "ラウンド前の練習で、その日の「基準となる振り幅の距離」を測っていますか？", options: [
+          { id: 38, text: "ラウンド前の練習で、その日の『基準となる振り幅の距離』を測っていますか？", options: [
             { label: "はい", score: { putting: 0, fundamentals: 0 } },
             { label: "いいえ", score: { putting: 1.5, fundamentals: 0.5 } }
           ]},
@@ -475,7 +794,7 @@
       {
         target: "chapter5",
         questions: [
-          { id: 41, text: "打つ前、ハザード（池やバンカー）を「避けるターゲット」として設定していますか？", options: [
+          { id: 41, text: "打つ前、ハザード（池やバンカー）を『避けるターゲット』として設定していますか？", options: [
             { label: "はい", score: { management: 0 } },
             { label: "いいえ[ピンしか見ない]", score: { management: 1.5 } }
           ]},
@@ -483,7 +802,7 @@
             { label: "はい", score: { management: 2, mental: 0.5 } },
             { label: "いいえ[確実に刻む]", score: { management: 0 } }
           ]},
-          { id: 43, text: "自分の「得意な距離」を残すように、逆算してレイアップ（刻む）できますか？", options: [
+          { id: 43, text: "自分の『得意な距離』を残すように、逆算してレイアップ（刻む）できますか？", options: [
             { label: "はい", score: { management: 0 } },
             { label: "いいえ", score: { management: 1.5, fundamentals: 0.5 } }
           ]},
@@ -504,7 +823,7 @@
             { label: "はい", score: { mental: 2 } },
             { label: "いいえ[すぐ切り替えられる]", score: { mental: 0 } }
           ]},
-          { id: 48, text: "セカンドショットを打つ際、ピンの位置（手前・奥）を考慮して「外しても安全な場所」をあらかじめ決めてから打っていますか？", options: [
+          { id: 48, text: "セカンドショットを打つ際、ピンの位置（手前・奥）を考慮して『外しても安全な場所』をあらかじめ決めてから打っていますか？", options: [
             { label: "はい", score: { management: 0 } },
             { label: "いいえ[常にピンを狙う]", score: { management: 1.5 } }
           ]},
@@ -522,22 +841,22 @@
 
     const affiliateLinks = {
       aggressive: {
-        title: "おすすめドライバー",
+        title: "AGGRESSIVEタイプにおすすめの1本",
         text: "スライスや右へのミスを減らしたい方には、つかまりやすく直進性の高いドライバーがおすすめです。",
         url: "https://hb.afl.rakuten.co.jp/ichiba/51fa5e79.a1ce0955.51fa5e7a.66ada583/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolffujico%2Ftm-dr-sim2ms%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
       },
       steady: {
-        title: "おすすめユーティリティ",
+        title: "STEADYタイプにおすすめの1本",
         text: "安定感をさらに高めたい方には、ミスに強く球が上がりやすいユーティリティがおすすめです。",
         url: "https://hb.afl.rakuten.co.jp/ichiba/51fa650e.03d1097e.51fa650f.70d909ab/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fcallawaygolf%2Fbp_007143_el4c%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
       },
       feel: {
-        title: "おすすめパター",
+        title: "FEELタイプにおすすめの1本",
         text: "距離感やタッチを改善したい方には、フィーリングを出しやすいパターがおすすめです。",
         url: "https://hb.afl.rakuten.co.jp/ichiba/51fa675d.19d21a30.51fa675e.9951aad8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgolfpartner-2%2Fodyssey-putter-049%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
       },
       technical: {
-        title: "おすすめパター",
+        title: "TECHNICALタイプにおすすめの1本",
         text: "再現性を高めたい方には、シンプルで直進性の高いピン型パターがおすすめです。",
         url: "https://hb.afl.rakuten.co.jp/ichiba/51fa6f36.5f20f680.51fa6f37.91c34ab9/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Feirigoods%2Fgef-05%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ=="
       }
@@ -696,7 +1015,8 @@
 
       const picked = affiliateLinks[profile];
       document.getElementById("affiliateTitle").textContent = picked.title;
-      document.getElementById("affiliateText").textContent = picked.text;
+      document.getElementById("affiliateText").textContent =
+        picked.text + " 診断タイプとの相性を踏まえて、最初の1本として選びやすいモデルを表示しています。";
       document.getElementById("affiliateLink").href = picked.url;
 
       const plan = [
@@ -709,8 +1029,12 @@
         "Day7：総合テストと振り返り"
       ];
       document.getElementById("trainingPlan").innerHTML = plan.map(p => `<li>${p}</li>`).join("");
+
       document.getElementById("resultSection").style.display = "block";
-      window.scrollTo({ top: document.getElementById("resultSection").offsetTop - 20, behavior: "smooth" });
+      window.scrollTo({
+        top: document.getElementById("resultSection").offsetTop - 20,
+        behavior: "smooth"
+      });
     }
 
     renderQuestions();
