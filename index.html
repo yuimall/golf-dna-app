@@ -3,1751 +3,268 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ゴルフDNA診断 × AIキャディ</title>
+  <title>Golf DNA App | スイング診断 × AIコーチ</title>
   <style>
-    * { box-sizing: border-box; }
-
-    :root{
-      --bg:#f3f6fb;
-      --panel:#ffffff;
-      --panel-soft:#f8fafc;
-      --line:#dbe4ee;
-      --text:#0f172a;
-      --sub:#475569;
-      --deep:#0f172a;
-      --deep2:#1e293b;
-      --emerald:#059669;
-      --emerald-soft:#d1fae5;
-      --gold:#d4af37;
-      --gold-soft:#f7e7a8;
-      --red:#b91c1c;
-      --red-soft:#fee2e2;
-      --blue:#2563eb;
-      --blue-soft:#dbeafe;
-      --shadow:0 18px 40px rgba(15,23,42,.08);
-      --r-xl:28px;
-      --r-lg:22px;
-      --r-md:16px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(212,175,55,.08), transparent 22%),
-        radial-gradient(circle at top right, rgba(37,99,235,.06), transparent 20%),
-        linear-gradient(180deg,#f8fafc 0%,#edf2f7 100%);
-      color:var(--text);
-      line-height:1.7;
-    }
-
-    .container{
-      max-width:1160px;
-      margin:0 auto;
-      padding:24px 18px 80px;
-    }
-
-    .hero,
-    .card,
-    .chapter,
-    .result-card{
-      background:rgba(255,255,255,.94);
-      border:1px solid rgba(255,255,255,.6);
-      border-radius:var(--r-xl);
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-
-    .hero{
-      background:
-        radial-gradient(circle at top right, rgba(212,175,55,.2), transparent 28%),
-        linear-gradient(135deg,#0f172a 0%,#182234 52%,#1f2937 100%);
-      color:#fff;
-      padding:30px;
-      overflow:hidden;
-      position:relative;
-      margin-bottom:22px;
-    }
-
-    .hero::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.04) 45%,transparent 100%);
-      pointer-events:none;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 14px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.06em;
-      background:linear-gradient(135deg,var(--gold),var(--gold-soft));
-      color:#111827;
-      margin-bottom:14px;
-      box-shadow:0 10px 22px rgba(212,175,55,.2);
-    }
-
-    h1{
-      margin:0 0 12px;
-      font-size:38px;
-      line-height:1.18;
-      letter-spacing:-.03em;
-    }
-
-    h2{
-      margin:0 0 10px;
-      font-size:25px;
-      letter-spacing:-.02em;
-    }
-
-    h3{
-      margin:0 0 8px;
-      font-size:20px;
-      letter-spacing:-.01em;
-    }
-
-    .hero .sub{
-      margin:0 0 22px;
-      color:rgba(255,255,255,.86);
-      max-width:840px;
-      font-size:15px;
-    }
-
-    .progress-wrap{ margin-top:18px; }
-    .progress-label{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-      font-size:14px;
-      color:rgba(255,255,255,.82);
-    }
-    .progress-bar{
-      width:100%;
-      height:14px;
-      border-radius:999px;
-      background:rgba(255,255,255,.12);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .progress-fill{
-      width:0%;
-      height:100%;
-      transition:width .25s ease;
-      background:linear-gradient(90deg,var(--gold),#f6e8b8);
-      box-shadow:0 0 20px rgba(212,175,55,.4);
-    }
-
-    .chapter{
-      padding:26px;
-      margin-bottom:20px;
-    }
-
-    .chapter-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:8px;
-    }
-
-    .chapter-tag{
-      font-size:12px;
-      font-weight:800;
-      color:#8a6a00;
-      background:rgba(212,175,55,.14);
-      padding:6px 10px;
-      border-radius:999px;
-    }
-
-    .chapter-sub{
-      color:var(--sub);
-      margin:0 0 6px;
-      font-size:14px;
-    }
-
-    .course-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-
-    .course-card{
-      border:1px solid var(--line);
-      border-radius:22px;
-      padding:18px;
-      background:linear-gradient(180deg,#fff 0%,#f9fbff 100%);
-      cursor:pointer;
-      transition:.18s ease;
-      box-shadow:0 4px 12px rgba(15,23,42,.03);
-    }
-
-    .course-card:hover{
-      transform:translateY(-1px);
-      border-color:#cbd5e1;
-      box-shadow:0 12px 24px rgba(15,23,42,.08);
-    }
-
-    .course-card.active{
-      border:2px solid var(--emerald);
-      background:linear-gradient(180deg,#ecfdf5 0%,#f0fdf4 100%);
-      box-shadow:0 14px 28px rgba(5,150,105,.12);
-    }
-
-    .course-title{
-      font-weight:900;
-      font-size:18px;
-      color:#0f172a;
-      margin-bottom:6px;
-      line-height:1.35;
-    }
-
-    .course-desc{
-      font-size:13px;
-      color:#64748b;
-    }
-
-    .question{
-      padding:18px 0;
-      border-top:1px solid #e8eef6;
-    }
-
-    .question:first-child{ border-top:none; }
-
-    .question-title{
-      font-weight:800;
-      margin-bottom:13px;
-      color:#0f172a;
-      font-size:16px;
-      letter-spacing:-.01em;
-    }
-
-    .options{
-      display:grid;
-      gap:10px;
-    }
-
-    .option{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      border:1px solid #dbe4ee;
-      border-radius:16px;
-      padding:14px 15px;
-      background:linear-gradient(180deg,#fff 0%,#f9fbff 100%);
-      cursor:pointer;
-      transition:.18s ease;
-      box-shadow:0 2px 8px rgba(15,23,42,.03);
-    }
-
-    .option:hover{
-      transform:translateY(-1px);
-      border-color:#c8d3df;
-      box-shadow:0 10px 22px rgba(15,23,42,.06);
-    }
-
-    .option.active{
-      border:2px solid var(--emerald);
-      background:linear-gradient(180deg,#ecfdf5 0%,#f0fdf4 100%);
-    }
-
-    .option input{
-      margin-top:4px;
-      transform:scale(1.05);
-      accent-color:#111827;
-    }
-
-    .option span{
-      color:#0f172a;
-      font-size:15px;
-    }
-
-    .email-input{
-      width:100%;
-      padding:14px 16px;
-      border:1px solid #cbd5e1;
-      border-radius:16px;
-      font-size:15px;
-      outline:none;
-      background:#fff;
-      transition:border-color .15s ease,box-shadow .15s ease;
-    }
-
-    .email-input:focus{
-      border-color:#94a3b8;
-      box-shadow:0 0 0 4px rgba(148,163,184,.15);
-    }
-
-    .actions{
-      display:flex;
-      gap:12px;
-      justify-content:flex-end;
-      margin-top:24px;
-      margin-bottom:10px;
-    }
-
-    button{
-      border:none;
-      border-radius:16px;
-      padding:15px 20px;
-      font-size:15px;
-      font-weight:800;
-      cursor:pointer;
-      transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;
-    }
-
-    button:hover{ transform:translateY(-1px); }
-
-    .btn-primary{
-      background:linear-gradient(135deg,#0f172a,#1e293b);
-      color:#fff;
-      box-shadow:0 14px 28px rgba(15,23,42,.18);
-    }
-
-    .btn-secondary{
-      background:#e5e7eb;
-      color:#111827;
-    }
-
-    .result{ display:none; margin-top:28px; }
-
-    .result-card{ padding:24px; margin-bottom:18px; }
-
-    .result-top{
-      background:
-        radial-gradient(circle at top right, rgba(212,175,55,.1), transparent 28%),
-        linear-gradient(180deg,#fff 0%,#f9fbff 100%);
-    }
-
-    .result-label{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      font-weight:800;
-      color:#8a6a00;
-      background:rgba(212,175,55,.12);
-      border-radius:999px;
-      padding:6px 10px;
-      margin-bottom:14px;
-    }
-
-    .result-type{
-      font-size:30px;
-      font-weight:900;
-      margin:0 0 10px;
-      color:#0f172a;
-      letter-spacing:-.03em;
-    }
-
-    .result-summary{
-      font-size:16px;
-      color:#334155;
-      margin:0;
-    }
-
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
-      margin-top:20px;
-    }
-
-    .stat-box{
-      border-radius:18px;
-      border:1px solid #e2e8f0;
-      background:#fff;
-      padding:16px;
-      text-align:center;
-    }
-
-    .stat-box .label{
-      font-size:12px;
-      font-weight:800;
-      color:#64748b;
-      margin-bottom:6px;
-    }
-
-    .stat-box .value{
-      font-size:22px;
-      font-weight:900;
-      color:#0f172a;
-    }
-
-    .stat-box.key{
-      background:#ecfdf5;
-      border-color:#bbf7d0;
-    }
-
-    .stat-box.key .label,
-    .stat-box.key .value{
-      color:#065f46;
-    }
-
-    .grid3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:18px;
-      margin:22px 0;
-    }
-
-    .issue-title{
-      font-weight:900;
-      color:#0f172a;
-      margin-bottom:10px;
-      font-size:19px;
-      letter-spacing:-.01em;
-    }
-
-    .issue-badge{
-      display:inline-block;
-      font-size:11px;
-      font-weight:800;
-      color:#64748b;
-      background:#f1f5f9;
-      padding:5px 8px;
-      border-radius:999px;
-      margin-bottom:12px;
-    }
-
-    ul,ol{
-      padding-left:20px;
-      margin:8px 0 0;
-    }
-
-    li{
-      margin-bottom:8px;
-      color:#334155;
-    }
-
-    .course-summary{
-      border:1px solid #d1fae5;
-      background:linear-gradient(180deg,#f0fdf4 0%,#ecfdf5 100%);
-    }
-
-    .summary-boxes{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
-      margin-top:16px;
-    }
-
-    .subbox{
-      padding:16px;
-      border-radius:18px;
-      background:#fff;
-      border:1px solid #d1fae5;
-    }
-
-    .subbox.dark{
-      border:1px solid #e2e8f0;
-      background:#fff;
-    }
-
-    .subbox-title{
-      font-size:13px;
-      font-weight:800;
-      margin-bottom:8px;
-    }
-
-    .forbidden{
-      background:#fff1f2;
-      border:1px solid #fecdd3;
-      display:flex;
-      gap:14px;
-      align-items:flex-start;
-    }
-
-    .forbidden-icon{
-      width:38px;
-      height:38px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      flex-shrink:0;
-      font-weight:900;
-      background:#fee2e2;
-      color:#b91c1c;
-    }
-
-    .ai-list{
-      display:grid;
-      gap:12px;
-    }
-
-    .ai-item{
-      display:flex;
-      gap:14px;
-      align-items:flex-start;
-      padding:16px;
-      border:1px solid #e2e8f0;
-      border-radius:18px;
-      background:#f8fafc;
-    }
-
-    .ai-num{
-      width:32px;
-      height:32px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-weight:900;
-      color:#065f46;
-      background:#d1fae5;
-      flex-shrink:0;
-    }
-
-    .hole-card{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      border-radius:20px;
-      padding:18px;
-      margin-bottom:12px;
-    }
-
-    .hole-name{
-      font-weight:900;
-      color:#065f46;
-      font-size:18px;
-      margin-bottom:8px;
-    }
-
-    .hole-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
-
-    .hole-tag{
-      font-size:11px;
-      font-weight:800;
-      color:#64748b;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid #e2e8f0;
-      background:#fff;
-    }
-
-    .affiliate-card{
-      border:1px solid rgba(191,0,0,.08);
-      background:
-        radial-gradient(circle at top right, rgba(191,0,0,.06), transparent 24%),
-        linear-gradient(180deg,#fff 0%,#fff8f8 100%);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .affiliate-card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.18) 50%,transparent 100%);
-      pointer-events:none;
-    }
-
-    .affiliate-eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      font-weight:800;
-      color:#b30000;
-      background:rgba(179,0,0,.08);
-      padding:6px 10px;
-      border-radius:999px;
-      margin-bottom:12px;
-    }
-
-    .affiliate-title{
-      font-size:28px;
-      font-weight:900;
-      margin:0 0 10px;
-      line-height:1.25;
-      color:#111827;
-      letter-spacing:-.03em;
-    }
-
-    .affiliate-text{
-      font-size:16px;
-      color:#334155;
-      margin:0 0 14px;
-      max-width:820px;
-    }
-
-    .affiliate-button{
-      display:inline-block;
-      margin-top:8px;
-      padding:16px 24px;
-      background:linear-gradient(135deg,var(--red),#dc2626);
-      color:#fff;
-      text-decoration:none;
-      border-radius:16px;
-      font-weight:900;
-      font-size:16px;
-      box-shadow:0 18px 30px rgba(179,0,0,.2);
-      transition:transform .16s ease,box-shadow .16s ease;
-    }
-
-    .affiliate-button:hover{
-      transform:translateY(-1px);
-      box-shadow:0 22px 34px rgba(179,0,0,.24);
-    }
-
-    .affiliate-sub{
-      margin-top:10px;
-      font-size:13px;
-      color:#64748b;
-    }
-
-    .premium-locked{
-      background:linear-gradient(135deg,#0f172a,#1e293b);
-      color:#fff;
-      text-align:center;
-    }
-
-    .premium-btn{
-      background:#10b981;
-      color:#fff;
-      box-shadow:0 0 18px rgba(16,185,129,.35);
-    }
-
-    .premium-open{
-      border:1px solid #fde68a;
-      overflow:hidden;
-      background:#fff;
-    }
-
-    .premium-head{
-      background:linear-gradient(135deg,#fde68a,#facc15);
-      color:#111827;
-      padding:16px 22px;
-      font-weight:900;
-      font-size:22px;
-    }
-
-    .premium-body{ padding:22px; }
-
-    .premium-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-      margin-bottom:20px;
-    }
-
-    .premium-box{
-      padding:18px;
-      border-radius:18px;
-      border:1px solid #e2e8f0;
-      background:#fff;
-    }
-
-    .premium-box.blue{
-      background:#eff6ff;
-      border-color:#bfdbfe;
-    }
-
-    .premium-box.green{
-      background:#ecfdf5;
-      border-color:#bbf7d0;
-    }
-
-    .premium-map{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
-      margin-top:12px;
-      margin-bottom:18px;
-    }
-
-    .map-box{
-      padding:18px;
-      border-radius:18px;
-      background:#fff;
-      border-left:4px solid #ef4444;
-      border-top:1px solid #e2e8f0;
-      border-right:1px solid #e2e8f0;
-      border-bottom:1px solid #e2e8f0;
-    }
-
-    .map-box.blue{
-      border-left-color:#3b82f6;
-    }
-
-    .step-card{
-      border:1px solid #e2e8f0;
-      border-radius:18px;
-      overflow:hidden;
-      margin-bottom:14px;
-      background:#fff;
-    }
-
-    .step-head{
-      background:#0f172a;
-      color:#fff;
-      padding:14px 16px;
-      font-weight:900;
-    }
-
-    .step-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-    }
-
-    .step-item{
-      padding:16px;
-      border-right:1px solid #e2e8f0;
-    }
-
-    .step-item:last-child{ border-right:none; }
-
-    .step-label{
-      font-size:11px;
-      font-weight:900;
-      color:#059669;
-      margin-bottom:8px;
-      letter-spacing:.08em;
-    }
-
-    .footer-actions{
-      display:flex;
-      gap:12px;
-      justify-content:flex-end;
-      margin-top:20px;
-    }
-
-    @media (max-width: 980px){
-      .course-grid,
-      .grid3,
-      .stats-grid,
-      .premium-grid,
-      .summary-boxes,
-      .premium-map{
-        grid-template-columns:1fr;
-      }
-
-      .step-grid{
-        grid-template-columns:1fr;
-      }
-
-      .step-item{
-        border-right:none;
-        border-bottom:1px solid #e2e8f0;
-      }
-
-      .step-item:last-child{ border-bottom:none; }
-    }
-
-    @media (max-width: 768px){
-      .container{ padding:16px; }
-      .hero,.chapter,.result-card{ padding:22px; }
-      h1{ font-size:29px; }
-      h2{ font-size:22px; }
-      .actions,.footer-actions{ flex-direction:column; }
-      button,.affiliate-button{ width:100%; text-align:center; }
-      .result-type{ font-size:24px; }
-      .affiliate-title{ font-size:23px; }
-      .hole-card{ flex-direction:column; }
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; }
+    
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #dbe4ee;
+      --text: #0f172a;
+      --sub: #475569;
+      --deep: #0f172a;
+      --emerald: #059669;
+      --emerald-soft: #d1fae5;
+      --accent: #ef4444; /* 警告やタイマー用 */
+    }
+
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+    
+    .container { max-width: 600px; margin: 0 auto; min-height: 100vh; background-color: var(--panel); position: relative; overflow-x: hidden; }
+    
+    header { background-color: var(--deep); color: white; padding: 15px 20px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+    
+    .screen { display: none; padding: 30px 20px; animation: fadeIn 0.4s ease-out; }
+    .screen.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Buttons */
+    .btn { display: block; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; text-align: center; transition: all 0.2s; margin-bottom: 15px; }
+    .btn-primary { background-color: var(--emerald); color: white; box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-outline { background-color: transparent; border: 2px solid var(--emerald); color: var(--emerald); }
+    .btn-premium { background-color: var(--deep); color: white; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3); font-size: 1.1rem; padding: 18px; }
+    
+    /* Start Screen */
+    .hero-text { text-align: center; margin-bottom: 30px; }
+    .hero-text h1 { font-size: 1.5rem; color: var(--deep); margin-bottom: 10px; }
+    .hero-text p { color: var(--sub); font-size: 0.95rem; }
+    
+    /* Question Screen */
+    .progress-bar { width: 100%; height: 8px; background-color: var(--line); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--emerald); width: 0%; transition: width 0.3s ease; }
+    .question-count { text-align: right; font-size: 0.85rem; color: var(--sub); margin-bottom: 10px; }
+    .question-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; line-height: 1.4; }
+    .option-list { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn { background-color: var(--panel-soft); border: 1px solid var(--line); padding: 15px; border-radius: 8px; text-align: left; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+    .option-btn:hover { border-color: var(--emerald); background-color: var(--emerald-soft); }
+
+    /* Loading Screen */
+    .loading-container { text-align: center; padding-top: 50px; }
+    .spinner { width: 50px; height: 50px; border: 5px solid var(--line); border-top-color: var(--emerald); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-weight: bold; color: var(--deep); margin-bottom: 10px; }
+    .loading-sub { color: var(--sub); font-size: 0.9rem; }
+
+    /* Result & Paywall Screen */
+    .result-header { text-align: center; margin-bottom: 20px; }
+    .problem-box { background-color: #fef2f2; border: 1px solid #fecaca; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
+    .problem-box h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.1rem; }
+    .problem-box p { color: #991b1b; font-size: 0.95rem; font-weight: bold; }
+    
+    .paywall-container { background-color: var(--panel-soft); border: 2px solid var(--emerald); border-radius: 12px; padding: 20px; position: relative; overflow: hidden; }
+    .solution-blur { filter: blur(6px); user-select: none; pointer-events: none; opacity: 0.6; }
+    .paywall-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.75); padding: 20px; text-align: center; }
+    
+    .timer-box { background-color: var(--accent); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    
+    .guarantee-text { font-size: 0.8rem; color: var(--sub); margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <section class="hero">
-      <span class="badge">PREMIUM GOLF ANALYSIS</span>
-      <h1>ゴルフDNA診断 × AIキャディ</h1>
-      <p class="sub">
-        50の質問から、あなたのゴルフ傾向を多角的に分析します。さらに次回ラウンドのコースに合わせて、
-        あなただけの攻略アドバイス、課題TOP3、練習プラン、おすすめクラブまで提示します。
-      </p>
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span>回答進捗</span>
-          <strong id="progressText">0 / 50</strong>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-      </div>
-    </section>
 
-    <form id="quizForm">
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>次回ラウンド予定のコースを選択</h2>
-          <span class="chapter-tag">COURSE SELECT</span>
-        </div>
-        <p class="chapter-sub">診断結果を次回ラウンドに落とし込むため、1つ選択してください。</p>
-        <div class="course-grid" id="courseGrid"></div>
-      </section>
+<div class="container">
+  <header>Golf DNA</header>
 
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第1章：現状とプレースタイル</h2>
-          <span class="chapter-tag">FOUNDATION</span>
-        </div>
-        <p class="chapter-sub">現状把握・再現性・基礎体力・自己認識をチェックします。</p>
-        <div id="chapter1"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第2章：ドライビング＆フルスイング</h2>
-          <span class="chapter-tag">FULL SWING</span>
-        </div>
-        <p class="chapter-sub">軌道、ミート率、傾斜対応、バランスを確認します。</p>
-        <div id="chapter2"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第3章：アプローチ＆バンカー</h2>
-          <span class="chapter-tag">SHORT GAME</span>
-        </div>
-        <p class="chapter-sub">寄せ・距離感・打ち分け・バンカー精度を確認します。</p>
-        <div id="chapter3"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第4章：パッティング</h2>
-          <span class="chapter-tag">PUTTING</span>
-        </div>
-        <p class="chapter-sub">距離感、ショートパット、ライン読みを分析します。</p>
-        <div id="chapter4"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>第5章：コースマネジメント・メンタル</h2>
-          <span class="chapter-tag">STRATEGY & MIND</span>
-        </div>
-        <p class="chapter-sub">判断力・感情コントロール・スコアメイクの思考を確認します。</p>
-        <div id="chapter5"></div>
-      </section>
-
-      <section class="chapter">
-        <div class="chapter-header">
-          <h2>診断結果をメールで受け取る</h2>
-          <span class="chapter-tag">OPTIONAL</span>
-        </div>
-        <p class="chapter-sub">今は入力欄のみです。後からメール送信機能を接続できます。</p>
-        <div class="question">
-          <div class="question-title">メールアドレス</div>
-          <input type="email" id="email" class="email-input" placeholder="example@email.com" />
-        </div>
-      </section>
-
-      <div class="actions">
-        <button type="button" class="btn-secondary" id="resetBtn">リセット</button>
-        <button type="submit" class="btn-primary">診断結果を見る</button>
-      </div>
-    </form>
-
-    <section class="result" id="resultSection">
-      <div class="result-card result-top">
-        <div class="result-label">RESULT PROFILE</div>
-        <p class="result-type">あなたのタイプ：<span id="profileType"></span></p>
-        <p class="result-summary" id="profileMessage"></p>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="label">平均スコア傾向</div>
-            <div class="value" id="courseAvgScore">-</div>
-          </div>
-          <div class="stat-box">
-            <div class="label">FWキープ率</div>
-            <div class="value" id="courseFwKeep">-</div>
-          </div>
-          <div class="stat-box">
-            <div class="label" id="courseThirdLabel">パーオン率</div>
-            <div class="value" id="courseThirdValue">-</div>
-          </div>
-          <div class="stat-box key">
-            <div class="label">攻略の鍵</div>
-            <div class="value" id="courseKey">-</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid3">
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 01</div>
-          <h3>課題①</h3>
-          <div class="issue-title" id="issue1"></div>
-          <ul id="issue1Actions"></ul>
-        </div>
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 02</div>
-          <h3>課題②</h3>
-          <div class="issue-title" id="issue2"></div>
-          <ul id="issue2Actions"></ul>
-        </div>
-        <div class="result-card">
-          <div class="issue-badge">TOP ISSUE 03</div>
-          <h3>課題③</h3>
-          <div class="issue-title" id="issue3"></div>
-          <ul id="issue3Actions"></ul>
-        </div>
-      </div>
-
-      <div class="result-card">
-        <h3>コースの本質と攻略サマリー</h3>
-        <p id="courseEssence"></p>
-
-        <div class="result-card course-summary" style="margin-top:16px; margin-bottom:0;">
-          <h3 id="adviceTitle"></h3>
-          <p id="adviceDesc"></p>
-
-          <div class="summary-boxes">
-            <div class="subbox">
-              <div class="subbox-title">具体アクション</div>
-              <div id="adviceAction"></div>
-            </div>
-            <div class="subbox dark">
-              <div class="subbox-title">キーとなるクラブ</div>
-              <div id="adviceClub" style="font-weight:900; font-size:18px;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="result-card forbidden">
-        <div class="forbidden-icon">!</div>
-        <div>
-          <h3>このコースでの絶対禁止事項</h3>
-          <p id="forbiddenText" style="font-weight:900; color:#881337; margin:0;"></p>
-        </div>
-      </div>
-
-      <div class="result-card">
-        <h3>AIキャディからのラウンド指示</h3>
-        <div class="ai-list" id="aiCaddieList"></div>
-      </div>
-
-      <div class="result-card">
-        <h3>警戒すべき代表ホール</h3>
-        <div id="holesList"></div>
-      </div>
-
-      <div class="result-card">
-        <h3>おすすめ練習プラン</h3>
-        <ol id="trainingPlan"></ol>
-      </div>
-
-      <div class="result-card affiliate-card">
-        <div class="affiliate-eyebrow">RECOMMENDED CLUB</div>
-        <h3 class="affiliate-title" id="affiliateTitle"></h3>
-        <p class="affiliate-text" id="affiliateText"></p>
-        <a
-          id="affiliateLink"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="affiliate-button"
-        >あなたに合うクラブを今すぐ確認する</a>
-        <div class="affiliate-sub">実運用時はここを楽天・Amazon・提携ECのアフィリエイトURLに差し替えてください。</div>
-      </div>
-
-      <div id="premiumArea"></div>
-
-      <div class="footer-actions">
-        <button type="button" class="btn-secondary" id="editBtn">回答を見直す</button>
-        <button type="button" class="btn-primary" id="resetFromResultBtn">すべてリセット</button>
-      </div>
-    </section>
+  <div id="start-screen" class="screen active">
+    <div class="hero-text">
+      <h1>あなたの「本当の弱点」を<br>AIが解剖学的に特定します</h1>
+      <p>30の質問からスイングDNAを抽出し、あなた専用の改善ドリルを処方します。</p>
+    </div>
+    <img src="https://images.unsplash.com/photo-1535136029863-4a3e36bd1dc3?auto=format&fit=crop&q=80&w=600&h=300" alt="Golf" style="width:100%; border-radius:8px; margin-bottom:25px; object-fit:cover;">
+    <button class="btn btn-primary" onclick="startQuiz()">DNA診断を開始する (無料)</button>
+    <p style="text-align:center; font-size:0.8rem; color:var(--sub);">※所要時間: 約3分</p>
   </div>
 
-  <script>
-    const COURSES = [
-      {
-        id: "otsu",
-        name: "大津カントリークラブ 東コース",
-        description: "27ホール。広く見えるが、長い2打目と地形で削られる戦略型コース。",
-        stats: { avgScore: "94.2", fwKeep: "62%", parOn: "28%", key: "長い2打目精度" },
-        essence: "広い見た目に油断しやすい一方、距離と地形がじわじわ効いてきます。ティーショットだけでなく、セカンド・サードの残距離管理がスコア差を生みます。",
-        holes: [
-          { name: "南郷6番", tags: ["Par5", "511y", "HCP 2"], strategy: "無理な2オン狙いより、3打目を得意距離に残す逆算設計が有効。100y前後のウェッジ勝負へ持ち込む意識が重要です。" },
-          { name: "天ヶ瀬1番", tags: ["Par5", "462y", "HCP 5"], strategy: "真っ直ぐに見えても、まずはセンター確保。寄せワンを取りやすい落とし所を先に決めることで、ボギー先行を防げます。" },
-          { name: "石山8番", tags: ["Par3", "188y", "池越え"], strategy: "ピンではなくグリーン中央狙いが鉄則。届かない番手の事故と、オーバーの両方を避ける番手選びが必要です。" }
-        ]
-      },
-      {
-        id: "nisshin",
-        name: "日清都カントリークラブ",
-        description: "高低差が大きく、見た目距離と実質距離がズレやすい山岳コース。",
-        stats: { avgScore: "96.5", fwKeep: "45%", parOn: "22%", key: "高低差の距離感" },
-        essence: "打ち上げ・打ち下ろしによって番手選択のズレが起きやすく、距離感の精度が重要です。実質ヤーデージと落とし所の設計が攻略の中心になります。",
-        holes: [
-          { name: "醍醐6番", tags: ["Par5", "551y", "HCP 1"], strategy: "左手前バンカーは避けたい場面。3打目をどこに外すかまで先に決めておくと、無駄な失点を減らせます。" },
-          { name: "宇治14番", tags: ["Par4", "438y", "HCP 2"], strategy: "右へ外すと角度と足場で大きく損をするため、ティーショットの狙い所が鍵です。" },
-          { name: "宇治12番", tags: ["Par5", "569y", "打ち下ろし"], strategy: "飛距離より次打のライの良さを優先。平坦な場所を残すことで、結果として平均スコアが安定します。" }
-        ]
-      },
-      {
-        id: "ujitawara",
-        name: "宇治田原カントリー倶楽部",
-        description: "大型グリーンと多彩なレイアウト。3パット回避が重要なコース。",
-        stats: { avgScore: "93.8", fwKeep: "50%", putts: "36.5", key: "3パット回避" },
-        essence: "広く見えても谷越え・池越え・ドッグレッグがあり、油断すると失点します。大型グリーンゆえ、乗せた後の距離感と3パット回避が重要です。",
-        holes: [
-          { name: "嘉納2番", tags: ["Par5", "545y", "右ドッグ"], strategy: "ショートカットより3打目の角度を良くする設計が有効。寄せやすいラインを残すことを優先してください。" },
-          { name: "嘉納5番", tags: ["Par4", "池越え"], strategy: "池の最短線ではなく、視界から池が消えるサイドを狙うことで、プレッシャーを下げて再現性を確保できます。" },
-          { name: "大福2番", tags: ["Par4", "最難関", "右ドッグ"], strategy: "ドライバー固定は危険。3WやUTで置きにいき、次打の角度を作るほうがトータルでは有利です。" }
-        ]
-      }
-    ];
+  <div id="question-screen" class="screen">
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+    <div class="question-count">Question <span id="current-q-num">1</span> / 30</div>
+    <h2 id="question-title" class="question-title">質問がここに入ります</h2>
+    <div id="option-list" class="option-list">
+      </div>
+  </div>
 
-    const CATEGORY_INFO = {
-      fundamentals: { name: "基礎・現状把握", actions: ["各番手のキャリーを測り、飛距離表を作る", "週1回スイング動画を撮影して比較する", "練習後にミス傾向を3行だけ記録する"] },
-      swing: { name: "フルスイング", actions: ["ハーフスイングで芯に当てる練習を増やす", "フィニッシュ3秒停止ドリルを行う", "切り返しは下半身主導を意識する"] },
-      shortGame: { name: "アプローチ・バンカー", actions: ["10y・20y・30yの振り幅基準を作る", "左足体重固定の寄せ練習を繰り返す", "バンカーはフェースを開く動作を反復する"] },
-      putting: { name: "パッティング", actions: ["1mのショートパットを20球連続で打つ", "5m・8m・10mの距離感を毎回合わせる", "打ち出し方向を一定にする練習を行う"] },
-      mental: { name: "メンタル", actions: ["ミス後の切り替えルーティンを作る", "打つ前の呼吸を一定にする", "スコアではなく次の1打だけに集中する"] },
-      management: { name: "コースマネジメント", actions: ["危険エリアを先に消す判断を徹底する", "得意距離を残すレイアップを覚える", "トラブル時は前より安全第一で出す"] },
-      fitness: { name: "体力・再現性", actions: ["ラウンド前に10分の動的ストレッチを行う", "下半身安定トレーニングを週2回行う", "後半を想定した連続素振りを取り入れる"] },
-      technical: { name: "理論・分析", actions: ["球筋と出球方向を毎回メモする", "スイングの修正点は1回に1つだけに絞る", "ラウンド前にコース戦略を言語化する"] },
-      power: { name: "飛距離コントロール", actions: ["フルショットと80%ショットの飛距離差を測る", "ドライバー以外のティーショットを増やす", "飛ばすより置く練習を取り入れる"] },
-      pressure: { name: "プレッシャー耐性", actions: ["1球勝負形式の練習を増やす", "朝イチ想定でルーティンを固定する", "見られている場面を想定して打つ"] }
-    };
+  <div id="loading-screen" class="screen">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <div class="loading-text">あなたのスイングDNAを解析中...</div>
+      <div class="loading-sub" id="loading-message">物理・解剖学エンジンを起動しています...</div>
+    </div>
+  </div>
 
-    const PROFILE_MESSAGES = {
-      AGGRESSIVE: "攻め志向が強く、流れに乗ると一気にスコアを縮めます。一方で、無理な狙いと力みから大叩きが出やすいタイプです。",
-      STEADY: "堅実で大崩れしにくく、スコアの土台を作れるタイプです。守りすぎるとチャンスを逃すので、攻め所の見極めが伸びしろです。",
-      TECHNICAL: "状況判断や改善意識が高く、再現性を作れるタイプです。考えすぎると振れなくなるため、実戦ではシンプルさが鍵です。",
-      FEEL: "フィーリングが合う日は強く、タッチや雰囲気でスコアを作れるタイプです。基準値を持つと安定感が一気に増します。",
-      POWER: "ヘッドスピードや飛距離に強みがあり、ロングホールで優位に立てるタイプです。縦距離と方向性を整えると一段上へ行けます。",
-      MENTAL: "技術は十分でも、ミス後の引きずりやプレッシャーで本来の力を出し切れないタイプです。ルーティン化で大きく変わります。"
-    };
+  <div id="result-screen" class="screen">
+    <div class="result-header">
+      <h2>診断完了</h2>
+      <p style="color:var(--sub); font-size:0.9rem;">あなたのスイングの「致命的なエラー」が判明しました。</p>
+    </div>
 
-    const TYPE_PROHIBITIONS = {
-      AGGRESSIVE: "無理な2オン狙い・谷越えショートカットの禁止",
-      STEADY: "守りすぎて長い番手を残しすぎる判断の禁止",
-      TECHNICAL: "考えすぎて打てなくなる状態の禁止",
-      FEEL: "感覚だけで番手を決めることの禁止",
-      POWER: "飛ぶから大丈夫という雑なマネジメントの禁止",
-      MENTAL: "ミス1発で流れを崩すセルフ崩壊の禁止"
-    };
+    <div class="problem-box" id="problem-box">
+      <h3>⚠️ 重大な飛距離ロスの原因</h3>
+      <p>あなたの回答データから、ダウンスイング時の【骨盤の開き不足】と【手元の浮き（+4cm）】が極端なアウトサイドイン軌道を引き起こしていることが特定されました。これが飛距離を約25ヤードロスさせています。</p>
+    </div>
 
-    const AFFILIATE_RECOMMENDATIONS = {
-      AGGRESSIVE: { title: "アグレッシブタイプにおすすめの1本", text: "つかまりやすく直進性が高いドライバーや、ティーショットを安定させる3W/5Wが相性良好です。", url: "https://example.com/aggressive-club" },
-      STEADY: { title: "ステディタイプにおすすめの1本", text: "ミスに強く球が上がりやすいユーティリティや、やさしいフェアウェイウッドがおすすめです。", url: "https://example.com/steady-club" },
-      TECHNICAL: { title: "テクニカルタイプにおすすめの1本", text: "距離感と操作性を両立しやすいアイアン、またはラインを出しやすいピン型パターが向いています。", url: "https://example.com/technical-club" },
-      FEEL: { title: "フィーリングタイプにおすすめの1本", text: "タッチを出しやすいパターや、顔つきが安心感につながるクラブが相性良好です。", url: "https://example.com/feel-club" },
-      POWER: { title: "パワータイプにおすすめの1本", text: "スピン量を抑えながら左右のバラつきを軽減できるドライバー、または強弾道のUTがおすすめです。", url: "https://example.com/power-club" },
-      MENTAL: { title: "メンタル敏感タイプにおすすめの1本", text: "構えた時に安心感があり、ミスに寛容なクラブのほうがスコア安定に直結します。", url: "https://example.com/mental-club" }
-    };
+    <div class="paywall-container">
+      <div class="solution-blur">
+        <h3 style="color:var(--emerald); margin-bottom:10px;">✅ あなた専用の改善処方箋</h3>
+        <p><strong>【右ひじ・ポケットイン ドリル】</strong></p>
+        <p>1. トップの形を作り、グリップの握力を10段階中「2」まで極限に抜きます。<br>2. 下半身を少し左に回し、右ひじを右ズボンのポケットにストンと落とす動きを...</p>
+        <div style="height: 100px; background:#ddd; margin-top:10px; display:flex; align-items:center; justify-content:center; border-radius:4px;">[ 専用ドリル動画プレーヤー ]</div>
+      </div>
+      
+      <div class="paywall-overlay">
+        <div class="timer-box">特別オファー終了まで: <span id="timer">15:00</span></div>
+        <h3 style="margin-bottom:15px; font-size:1.1rem; color:var(--deep);">専用ドリルをアンロックして<br>明日から25ヤード伸ばす</h3>
+        <button class="btn btn-premium" onclick="alert('決済画面へ遷移します。ビジネスモデル上、ここで即決課金を狙います。')">Proプランを開始する (初月¥100)</button>
+        <div class="guarantee-text">🔒 30日間 スイング数値改善・全額返金保証</div>
+        <button class="btn btn-outline" style="margin-top:15px; padding:10px; font-size:0.9rem;" onclick="location.reload()">課金せずにデータを破棄する</button>
+      </div>
+    </div>
+  </div>
 
-    const COURSE_TYPE_ADVICE = {
-      otsu: {
-        AGGRESSIVE: { title: "広い見た目に騙されず、3打目勝負へ切り替える", desc: "大津東は『振れるように見える』ことで逆に崩れやすいコースです。飛ばすことより、長い2打目を難しくしない置き方が大切です。", action: "ティーショットはフルスイングより、80〜90%でフェアウェイ優先。", keyClub: "5W / ユーティリティ" },
-        STEADY: { title: "あなたの堅実さが最も活きるコース", desc: "無理に2オンを狙わず、3打目を得意距離に揃えることで安定してスコアを作れます。", action: "パー5は最初から3打目地点を先に決めておく。", keyClub: "得意なウェッジ" },
-        TECHNICAL: { title: "石山の地形と距離の罠を読む", desc: "大津東は球筋より『どこへ外すか』の設計が重要です。パー3と長いミドルで冷静さが問われます。", action: "グリーンを4分割し、最も安全なエリアを毎回決める。", keyClub: "ミドルアイアン" },
-        FEEL: { title: "視覚の広さに流されないこと", desc: "広い景色でテンポが速くなりやすいので、素振りと足裏感覚で落ち着いてから打つことが重要です。", action: "素振り前に傾斜と落とし所を3秒確認する。", keyClub: "ショートアイアン" },
-        POWER: { title: "飛距離を武器にしつつ、置き所を絞る", desc: "大津東では飛ばせるほど2打目が雑になりやすいです。飛距離の優位を、無理な狙いではなく優位な残距離作りに使ってください。", action: "ドライバーは『飛ばす』より『次打をフルショットできる場所へ』。", keyClub: "ミニドライバー / 3W" },
-        MENTAL: { title: "長いホールで焦らないことが最優先", desc: "大津東は一度のミスで慌てると連続ミスが出やすい設計です。刻む勇気がそのままスコアになります。", action: "ミス後は次打の目標を10秒で言語化してから構える。", keyClub: "安心して振れるUT" }
-      },
-      nisshin: {
-        AGGRESSIVE: { title: "打ち下ろしの『いけそう』を封じる", desc: "高低差で気持ちが前に出やすく、狙いすぎると奥や左右に外しやすいコースです。", action: "迷ったら1番手下げてコンパクトに振る。", keyClub: "ショートアイアン / ウェッジ" },
-        STEADY: { title: "実質ヤーデージを愚直に信じる", desc: "このコースは見た目より実質距離が重要です。あなたの安定感と相性が良いので、距離計の数字を信じて安全サイドで戦いましょう。", action: "打ち上げは大きめ番手を短く持って振る。", keyClub: "ショートウッド / UT" },
-        TECHNICAL: { title: "高低差と落下角の計算が武器になる", desc: "グリーン奥へ外すと苦しくなりやすいコースです。手前から攻める設計が合理的です。", action: "エッジに落として転がすイメージで番手選択する。", keyClub: "スピンの効くウェッジ" },
-        FEEL: { title: "風と景色に飲まれないリズム作り", desc: "高台ならではの風と高低差の錯覚でテンポが乱れやすいです。イメージを先に作るとミスが減ります。", action: "打つ前に最高点から落ちる弾道を頭の中で描く。", keyClub: "低い球が打ちやすい番手" },
-        POWER: { title: "飛ばしすぎで難ライを作らない", desc: "飛距離があるほど、次打が極端なライに入りやすい場面があります。飛ぶ人ほど刻むべきコースです。", action: "平坦なライを残せるクラブを優先する。", keyClub: "コントロールしやすいUT" },
-        MENTAL: { title: "山岳コース特有の圧迫感に負けない", desc: "景色の圧に飲まれて番手やテンポがズレやすいです。ルーティンを固定するだけでかなり安定します。", action: "毎ショット、呼吸→素振り1回→構えるの順を固定する。", keyClub: "安心感のあるFW" }
-      },
-      ujitawara: {
-        AGGRESSIVE: { title: "ドッグレッグの誘惑を断ち切る", desc: "『越えられそう』が最も危険なコースです。ショートカットを封じるだけでスコアがまとまりやすくなります。", action: "最初に安全なレイアップ番手をバッグから抜いて持つ。", keyClub: "3W / ユーティリティ" },
-        STEADY: { title: "大型グリーンでは乗せるだけでは不十分", desc: "宇治田原は3パット回避が重要です。ピンと同じ面や上りラインを残すことまで含めて設計してください。", action: "ピン位置ではなく手前エッジ基準で番手を選ぶ。", keyClub: "距離感が合うミドルアイアン" },
-        TECHNICAL: { title: "大型グリーンの段差攻略がカギ", desc: "どこに乗せるかでパット数が大きく変わります。段と傾斜の把握がスコア直結です。", action: "グリーン全体の高低差を必ず先に見る。", keyClub: "スピンコントロールできるウェッジ" },
-        FEEL: { title: "池や谷の圧迫感をリズムで制御する", desc: "視覚情報でテンポが乱れやすいです。景色に対抗するより、自分のリズムを守る意識が重要です。", action: "ハザード越え前は深呼吸2回してから入る。", keyClub: "最も自信を持って振れる番手" },
-        POWER: { title: "飛距離より角度優先で組み立てる", desc: "飛ばせても、角度が悪ければ大型グリーンで3パットが増えます。置き所の質を優先してください。", action: "ティーショット前に『次打の角度』を基準にクラブ選択する。", keyClub: "200y前後を置きにいけるクラブ" },
-        MENTAL: { title: "1回の池越えミスを引きずらない", desc: "宇治田原は視覚プレッシャーが多く、1ミス後の流れ崩壊が起きやすいです。切り替え設計が必要です。", action: "ミス直後は次の安全地点だけを口に出す。", keyClub: "顔つきで安心できるクラブ" }
-      }
-    };
+</div>
 
-    const PREMIUM_DATA = {
-      otsu: {
-        map: { attack: "天ヶ瀬の比較的素直なホール、南郷の3打目勝負ホール", defend: "石山コース全体、長いPar3、池越え" },
-        steps: [
-          { name: "南郷6番", tee: "右の無理なラインは使わず、平坦なフェアウェイ優先。", second: "残り距離ではなく『次打のライ』を優先してレイアップ。", green: "奥は速くなりやすいため、手前から攻める。" },
-          { name: "石山8番", tee: "池越えはセンター狙い。ピンは見ない。", second: "ショート時は無理に寄せずボギーOKの発想。", green: "下りは触るだけ。返しを残しすぎない。" }
-        ]
-      },
-      nisshin: {
-        map: { attack: "醍醐の前半、比較的視界が素直なホール", defend: "宇治の終盤、高低差が大きいホール" },
-        steps: [
-          { name: "醍醐6番", tee: "方向性優先でセンターへ。", second: "左手前バンカーNG。右花道側へレイアップ。", green: "上げるより転がしも選択肢に。" },
-          { name: "宇治14番", tee: "右NG。置き所を明確に絞る。", second: "足場を見て無理しない。番手のブレを減らす。", green: "同じ段に乗せることを最優先。" }
-        ]
-      },
-      ujitawara: {
-        map: { attack: "嘉納コース全般、比較的広いホール", defend: "大福・大杉のドッグレッグと池越え" },
-        steps: [
-          { name: "大福2番", tee: "1W固定をやめ、3WやUTで置きに行く。", second: "右ドッグの角度を考え、左サイドから攻める。", green: "大型グリーンの段差を最優先に確認。" },
-          { name: "嘉納5番", tee: "池を見ないラインを選ぶ。", second: "無理なピン狙いを封じる。", green: "まず2パット圏内へ寄せる発想。" }
-        ]
-      }
-    };
+<script>
+  // --- 30問の質問データ (技術・メンタル・フィジカル・ギア) ---
+  const questions = [
+    { q: "平均スコアはどのくらいですか？", options: ["100以上", "90〜99", "80〜89", "79以下"] },
+    { q: "ドライバーの平均飛距離は？", options: ["200y未満", "200〜230y", "230〜250y", "250y以上"] },
+    { q: "現在のスイングで一番の悩みは？", options: ["スライス", "フック/チーピン", "ダフリ/トップ", "飛距離不足"] },
+    { q: "ミスが最も出やすいタイミングは？", options: ["朝イチのティーショット", "プレッシャーのかかる場面", "ラウンド終盤(疲労時)", "常にランダムに出る"] },
+    { q: "あなたが理想とする持ち球は？", options: ["ストレート", "ドロー", "フェード", "こだわらない"] },
+    { q: "実際のラウンドでの球筋は？", options: ["右に曲がる", "左に曲がる", "左右両方に散る", "低い弾道が多い"] },
+    { q: "アイアンでのミスはどちらが多いですか？", options: ["ダフリ（手前を叩く）", "トップ（ボールの上を叩く）", "シャンク", "左右へのブレ"] },
+    { q: "アプローチ（グリーン周り）での一番のミスは？", options: ["ザックリ（チャックリ）", "ホームラン（トップ）", "距離感が合わない", "方向がずれる"] },
+    { q: "パッティングの最大の課題は？", options: ["ショートパットを外す", "ロングパットの距離感", "ラインの読み間違い", "ストロークのブレ"] },
+    { q: "自分のスイングテンポをどう感じていますか？", options: ["かなり早い", "普通", "ゆったりしている", "日によってバラバラ"] },
+    { q: "切り返しのタイミング、どこから動かしていますか？", options: ["手・腕から", "肩・上半身から", "腰・下半身から", "意識していない"] },
+    { q: "インパクト時の打点の傾向は？", options: ["ヒール（根元）寄り", "トゥ（先）寄り", "上下にバラつく", "芯を捉えている"] },
+    { q: "ドライバーの弾道の高さは？", options: ["高すぎる（吹け上がる）", "理想的な高さ", "低すぎる（上がらない）", "一定しない"] },
+    { q: "スイング中の体重移動について", options: ["右足に残りがち", "左足に突っ込みがち", "スムーズに移動できている", "スウェー（横ブレ）している"] },
+    { q: "フィニッシュで3秒間、バランス良く立てますか？", options: ["いつも立てる", "よろけることが多い", "打ち終わってすぐ歩き出す", "意識したことがない"] },
+    { q: "身体の柔軟性（特に股関節・胸椎）に自信はありますか？", options: ["とても硬い", "普通", "柔らかい", "ヨガ等をしている"] },
+    { q: "ラウンド中や練習後に、痛みを感じやすい部位は？", options: ["腰", "手首・肘", "首・肩", "特にない"] },
+    { q: "普段の運動習慣はどの程度ですか？", options: ["全くしない", "週1〜2回の軽い運動", "週3回以上のトレーニング", "筋トレを本格的にしている"] },
+    { q: "ゴルフの練習場（打ちっぱなし）へ行く頻度は？", options: ["月1回未満", "月1〜2回", "週1回", "週2回以上"] },
+    { q: "実際のコースに出る（ラウンド）頻度は？", options: ["年数回", "月1回程度", "月2〜3回", "週1回以上"] },
+    { q: "朝イチのティーショット、緊張度は10段階でいくつ？", options: ["1〜3（リラックス）", "4〜6（普通）", "7〜8（緊張する）", "9〜10（手が震えるレベル）"] },
+    { q: "池越えや谷越えのシチュエーションでの思考は？", options: ["池を意識して力む", "安全な方向へ逃げる", "普段通り打てる", "結果を恐れずピンを狙う"] },
+    { q: "ベストスコア更新がかかった最終ホールでの心境は？", options: ["守りに入りスイングが縮こまる", "無理をして大叩きする", "スコアを意識せずプレーできる", "まだその経験がない"] },
+    { q: "連続してミスショットをした後の切り替えは？", options: ["引きずって次のホールも崩れる", "スイングを修正しようと考えすぎる", "深呼吸してすぐにリセットできる", "怒りでクラブを雑に扱う"] },
+    { q: "コースマネジメントで最も意識していることは？", options: ["とにかくピンを真っ直ぐ狙う", "ハザードを避ける安全第一", "自分の得意な距離を残す逆算", "何も考えていない"] },
+    { q: "現在使用しているドライバーのシャフトの硬さ（フレックス）は？", options: ["RまたはSR", "S", "X以上", "わからない"] },
+    { q: "アイアンのシャフトの素材は？", options: ["軽量スチール（NSプロ等）", "重量スチール（ダイナミックゴールド等）", "カーボン", "わからない"] },
+    { q: "クラブ選びで最も重視するポイントは？", options: ["ブランド・デザイン", "飛距離性能", "寛容性（ミスの強さ）", "打感・操作性"] },
+    { q: "現在のクラブセッティングに不満はありますか？", options: ["ドライバーが合っていない気がする", "アイアンが重い/軽い", "ウェッジの距離の階段が悪い", "特に不満はない"] },
+    { q: "ゴルフギア（道具）へのこだわり度は？", options: ["最新モデルが出たらすぐ試す", "信頼できるものを長く使う", "スコアが良くなるなら投資を惜しまない", "安ければ何でもいい"] }
+  ];
 
-    const sections = [
-      {
-        target: "chapter1",
-        questions: [
-          { id: 1, text: "現在の平均スコアは？", options: [
-            { label: "110以上", score: { fundamentals: 2, pressure: 1 } },
-            { label: "100〜109", score: { fundamentals: 1.3, pressure: 0.5 } },
-            { label: "90〜99", score: { fundamentals: 0.7 } },
-            { label: "89以下", score: { fundamentals: 0 } }
-          ]},
-          { id: 2, text: "最もスコアを崩している原因は？", options: [
-            { label: "ティーショット", score: { swing: 2, power: 1 } },
-            { label: "アイアンのダフリ・トップ", score: { swing: 2 } },
-            { label: "アプローチ・パター", score: { shortGame: 1.2, putting: 1.2 } },
-            { label: "メンタル・判断", score: { mental: 1.5, management: 1 } }
-          ]},
-          { id: 3, text: "練習頻度は？", options: [
-            { label: "月0〜1回", score: { fundamentals: 2 } },
-            { label: "月2〜4回", score: { fundamentals: 1 } },
-            { label: "月5回以上", score: { fundamentals: 0 } }
-          ]},
-          { id: 4, text: "スイングを動画で確認していますか？", options: [
-            { label: "毎回する", score: { technical: 1, fundamentals: 0 } },
-            { label: "たまにする", score: { technical: 0.5, fundamentals: 1 } },
-            { label: "ほぼしない", score: { fundamentals: 2 } }
-          ]},
-          { id: 5, text: "スイング中に最も力むのは？", options: [
-            { label: "グリップ・腕", score: { swing: 1, mental: 1 } },
-            { label: "肩・上半身", score: { swing: 1, mental: 1 } },
-            { label: "特に力まない", score: { mental: 0 } }
-          ]},
-          { id: 6, text: "各番手のキャリーを把握していますか？", options: [
-            { label: "正確に把握している", score: { fundamentals: 0, management: 0 } },
-            { label: "だいたい把握", score: { fundamentals: 1, management: 0.5 } },
-            { label: "ほぼわからない", score: { fundamentals: 2, management: 1 } }
-          ]},
-          { id: 7, text: "クラブセッティングは自分に合っていますか？", options: [
-            { label: "合っている", score: { fundamentals: 0 } },
-            { label: "少し不安", score: { fundamentals: 1 } },
-            { label: "わからない", score: { fundamentals: 1.5 } },
-            { label: "合っていない気がする", score: { fundamentals: 2, swing: 0.5 } }
-          ]},
-          { id: 8, text: "ラウンド前に10分以上ストレッチしますか？", options: [
-            { label: "する", score: { fitness: 0 } },
-            { label: "しない", score: { fitness: 2 } }
-          ]},
-          { id: 9, text: "後半で下半身の疲れや乱れを感じますか？", options: [
-            { label: "かなり感じる", score: { fitness: 2 } },
-            { label: "少し感じる", score: { fitness: 1 } },
-            { label: "あまり感じない", score: { fitness: 0 } }
-          ]},
-          { id: 10, text: "ミス直後に原因を分析できますか？", options: [
-            { label: "すぐできる", score: { technical: 1, fundamentals: 0 } },
-            { label: "少しできる", score: { fundamentals: 0.5 } },
-            { label: "感情的になる", score: { mental: 2, pressure: 0.5 } },
-            { label: "よくわからない", score: { fundamentals: 1.5 } }
-          ]}
-        ]
-      },
-      {
-        target: "chapter2",
-        questions: [
-          { id: 11, text: "ドライバーの大きなミスは？", options: [
-            { label: "スライス・右プッシュ", score: { swing: 2, power: 0.5 } },
-            { label: "フック・左引っかけ", score: { swing: 2, power: 0.5 } },
-            { label: "テンプラ・チョロ", score: { swing: 2, fundamentals: 1 } },
-            { label: "大きなミスは少ない", score: { swing: 0 } }
-          ]},
-          { id: 12, text: "フィニッシュで3秒止まれますか？", options: [
-            { label: "止まれる", score: { swing: 0, fitness: 0 } },
-            { label: "時々止まれる", score: { swing: 1, fitness: 0.5 } },
-            { label: "止まれない", score: { swing: 1.5, fitness: 1 } }
-          ]},
-          { id: 13, text: "切り返しはどこから始めていますか？", options: [
-            { label: "腰・下半身", score: { swing: 0 } },
-            { label: "腕・手元", score: { swing: 2 } },
-            { label: "意識していない", score: { swing: 1.5 } }
-          ]},
-          { id: 14, text: "自分のスイング軌道を理解していますか？", options: [
-            { label: "理解している", score: { swing: 0, technical: 1 } },
-            { label: "少し理解している", score: { swing: 0.7, technical: 0.5 } },
-            { label: "理解していない", score: { swing: 2 } }
-          ]},
-          { id: 15, text: "アイアン後のターフはどうなりますか？", options: [
-            { label: "ボール先が取れる", score: { swing: 0 } },
-            { label: "払い打ち気味", score: { swing: 1 } },
-            { label: "手前をダフる", score: { swing: 2 } }
-          ]},
-          { id: 16, text: "アドレスで右肩が前に出やすいですか？", options: [
-            { label: "よく出る", score: { swing: 1.5 } },
-            { label: "少しある", score: { swing: 0.7 } },
-            { label: "ない", score: { swing: 0 } }
-          ]},
-          { id: 17, text: "頭が大きく動くと言われますか？", options: [
-            { label: "よく言われる", score: { swing: 2, fitness: 0.5 } },
-            { label: "たまに言われる", score: { swing: 1 } },
-            { label: "言われない", score: { swing: 0 } }
-          ]},
-          { id: 18, text: "芯に当たる確率は？", options: [
-            { label: "30%以下", score: { swing: 2 } },
-            { label: "30〜70%", score: { swing: 1 } },
-            { label: "70%以上", score: { swing: 0 } }
-          ]},
-          { id: 19, text: "傾斜地のセオリーを理解していますか？", options: [
-            { label: "理解している", score: { management: 0, fundamentals: 0 } },
-            { label: "少し理解", score: { management: 1 } },
-            { label: "理解していない", score: { management: 1.5, fundamentals: 1 } }
-          ]},
-          { id: 20, text: "フェアウェイウッドを自信を持って使えますか？", options: [
-            { label: "使える", score: { swing: 0 } },
-            { label: "少し不安", score: { swing: 1 } },
-            { label: "使えない", score: { swing: 1.5 } },
-            { label: "そもそも使わない", score: { swing: 1, management: 0.5 } }
-          ]}
-        ]
-      },
-      {
-        target: "chapter3",
-        questions: [
-          { id: 21, text: "30y以内から平均何打で上がれますか？", options: [
-            { label: "4打以上", score: { shortGame: 2, putting: 0.5 } },
-            { label: "3打", score: { shortGame: 1 } },
-            { label: "2打", score: { shortGame: 0 } }
-          ]},
-          { id: 22, text: "アプローチの一番のミスは？", options: [
-            { label: "ザックリ", score: { shortGame: 2 } },
-            { label: "トップ", score: { shortGame: 2 } },
-            { label: "距離感ミス", score: { shortGame: 1.5 } },
-            { label: "大きなミスは少ない", score: { shortGame: 0 } }
-          ]},
-          { id: 23, text: "アプローチで体重移動しますか？", options: [
-            { label: "する", score: { shortGame: 1.5 } },
-            { label: "少しする", score: { shortGame: 1 } },
-            { label: "左足体重固定", score: { shortGame: 0 } }
-          ]},
-          { id: 24, text: "状況で上げる・転がすを打ち分けますか？", options: [
-            { label: "打ち分ける", score: { shortGame: 0, management: 0 } },
-            { label: "少し打ち分ける", score: { shortGame: 0.8, management: 0.3 } },
-            { label: "いつも同じ", score: { shortGame: 2, management: 0.5 } }
-          ]},
-          { id: 25, text: "距離感は振り幅基準で決めていますか？", options: [
-            { label: "決めている", score: { shortGame: 0, technical: 1 } },
-            { label: "感覚が多い", score: { shortGame: 1.5 } }
-          ]},
-          { id: 26, text: "バンカー1発脱出率70%以上ありますか？", options: [
-            { label: "ある", score: { shortGame: 0 } },
-            { label: "ない", score: { shortGame: 2 } }
-          ]},
-          { id: 27, text: "バンカーでフェースを開けますか？", options: [
-            { label: "開ける", score: { shortGame: 0 } },
-            { label: "少し不安", score: { shortGame: 1 } },
-            { label: "開けない", score: { shortGame: 1.5 } }
-          ]},
-          { id: 28, text: "エッジからパター使用に抵抗はありますか？", options: [
-            { label: "ない", score: { management: 0, shortGame: 0 } },
-            { label: "少しある", score: { management: 0.5, shortGame: 0.5 } },
-            { label: "かなりある", score: { management: 1, shortGame: 1 } }
-          ]},
-          { id: 29, text: "インパクトで緩む癖はありますか？", options: [
-            { label: "ある", score: { shortGame: 2, mental: 0.5 } },
-            { label: "少しある", score: { shortGame: 1 } },
-            { label: "ない", score: { shortGame: 0 } }
-          ]},
-          { id: 30, text: "バンスを滑らせる感覚はありますか？", options: [
-            { label: "ある", score: { shortGame: 0 } },
-            { label: "少しある", score: { shortGame: 0.7 } },
-            { label: "ない", score: { shortGame: 1.5 } }
-          ]}
-        ]
-      },
-      {
-        target: "chapter4",
-        questions: [
-          { id: 31, text: "1ラウンド平均パット数は？", options: [
-            { label: "40以上", score: { putting: 2 } },
-            { label: "36〜39", score: { putting: 1 } },
-            { label: "35以下", score: { putting: 0 } }
-          ]},
-          { id: 32, text: "3パットの最大原因は？", options: [
-            { label: "1打目の距離感", score: { putting: 1.5 } },
-            { label: "短いパットを外す", score: { putting: 1.5, mental: 0.5 } },
-            { label: "ライン読み", score: { putting: 1.2, technical: 0.3 } }
-          ]},
-          { id: 33, text: "苦手なのは？", options: [
-            { label: "上り", score: { putting: 1 } },
-            { label: "下り", score: { putting: 1.5 } },
-            { label: "どちらも", score: { putting: 2 } },
-            { label: "特にない", score: { putting: 0 } }
-          ]},
-          { id: 34, text: "1mパットで顔を残せますか？", options: [
-            { label: "残せる", score: { putting: 0 } },
-            { label: "時々上がる", score: { putting: 0.8 } },
-            { label: "すぐ上がる", score: { putting: 1.5 } }
-          ]},
-          { id: 35, text: "ストローク中に手首は動きますか？", options: [
-            { label: "固定できる", score: { putting: 0 } },
-            { label: "少し動く", score: { putting: 0.8 } },
-            { label: "よく動く", score: { putting: 1.5 } }
-          ]},
-          { id: 36, text: "ラインは後方以外からも確認しますか？", options: [
-            { label: "する", score: { putting: 0, technical: 1 } },
-            { label: "たまにする", score: { putting: 0.5, technical: 0.3 } },
-            { label: "しない", score: { putting: 1 } }
-          ]},
-          { id: 37, text: "パター専用のグリップを使っていますか？", options: [
-            { label: "使っている", score: { putting: 0 } },
-            { label: "少し意識している", score: { putting: 0.5 } },
-            { label: "ショットと同じ", score: { putting: 1 } }
-          ]},
-          { id: 38, text: "ラウンド前に基準距離を測りますか？", options: [
-            { label: "測る", score: { putting: 0, fundamentals: 0 } },
-            { label: "たまに測る", score: { putting: 0.7, fundamentals: 0.2 } },
-            { label: "測らない", score: { putting: 1.5, fundamentals: 0.5 } }
-          ]},
-          { id: 39, text: "芯で打つことを意識していますか？", options: [
-            { label: "常に意識", score: { putting: 0 } },
-            { label: "時々意識", score: { putting: 0.5 } },
-            { label: "あまり意識しない", score: { putting: 1 } }
-          ]},
-          { id: 40, text: "ボールラインを毎回合わせますか？", options: [
-            { label: "毎回合わせる", score: { putting: 0 } },
-            { label: "たまに合わせる", score: { putting: 0.7 } },
-            { label: "合わせない", score: { putting: 1 } },
-            { label: "線を引いていない", score: { putting: 1.5 } }
-          ]}
-        ]
-      },
-      {
-        target: "chapter5",
-        questions: [
-          { id: 41, text: "ハザードは事前に避ける設定をしていますか？", options: [
-            { label: "している", score: { management: 0 } },
-            { label: "時々する", score: { management: 0.7 } },
-            { label: "ピンしか見ない", score: { management: 1.5 } }
-          ]},
-          { id: 42, text: "ティーショットミス後、無理にグリーンを狙いますか？", options: [
-            { label: "狙う", score: { management: 2, mental: 0.5 } },
-            { label: "たまに狙う", score: { management: 1 } },
-            { label: "刻む", score: { management: 0 } }
-          ]},
-          { id: 43, text: "得意距離を残すレイアップができますか？", options: [
-            { label: "できる", score: { management: 0 } },
-            { label: "少しできる", score: { management: 0.7 } },
-            { label: "できない", score: { management: 1.5, fundamentals: 0.5 } }
-          ]},
-          { id: 44, text: "人前や朝イチでテンポが速くなりますか？", options: [
-            { label: "なる", score: { mental: 2, pressure: 1 } },
-            { label: "少しなる", score: { mental: 1, pressure: 0.5 } },
-            { label: "ならない", score: { mental: 0 } }
-          ]},
-          { id: 45, text: "プレショットルーティンは一定ですか？", options: [
-            { label: "一定", score: { mental: 0, management: 0 } },
-            { label: "少しブレる", score: { mental: 0.7 } },
-            { label: "毎回違う", score: { mental: 1.5 } }
-          ]},
-          { id: 46, text: "風向きや高低差を計算して番手を選びますか？", options: [
-            { label: "毎回する", score: { management: 0, technical: 0.5 } },
-            { label: "大体する", score: { management: 1 } },
-            { label: "あまりしない", score: { management: 1.5 } }
-          ]},
-          { id: 47, text: "大叩き後、次ホールまで引きずりますか？", options: [
-            { label: "引きずる", score: { mental: 2, pressure: 1 } },
-            { label: "少し引きずる", score: { mental: 1 } },
-            { label: "切り替えられる", score: { mental: 0 } }
-          ]},
-          { id: 48, text: "セカンドで安全な外し場所を決めていますか？", options: [
-            { label: "決めている", score: { management: 0 } },
-            { label: "時々決める", score: { management: 0.7 } },
-            { label: "常にピン狙い", score: { management: 1.5 } }
-          ]},
-          { id: 49, text: "林などのトラブル時、安全に出せますか？", options: [
-            { label: "出せる", score: { management: 0, mental: 0 } },
-            { label: "たまに無理する", score: { management: 1, mental: 0.3 } },
-            { label: "前を狙ってしまう", score: { management: 2, mental: 0.5 } }
-          ]},
-          { id: 50, text: "トータルスコアを気にしすぎてプレッシャーになりますか？", options: [
-            { label: "なる", score: { mental: 2, pressure: 1 } },
-            { label: "少しなる", score: { mental: 1, pressure: 0.5 } },
-            { label: "ならない", score: { mental: 0 } }
-          ]}
-        ]
-      }
-    ];
+  let currentQuestion = 0;
+  
+  // DOM Elements
+  const startScreen = document.getElementById('start-screen');
+  const questionScreen = document.getElementById('question-screen');
+  const loadingScreen = document.getElementById('loading-screen');
+  const resultScreen = document.getElementById('result-screen');
+  
+  const qTitle = document.getElementById('question-title');
+  const optionList = document.getElementById('option-list');
+  const qNum = document.getElementById('current-q-num');
+  const progressFill = document.getElementById('progress-fill');
 
-    let selectedCourseId = "";
-    let isPremiumOpen = false;
+  function startQuiz() {
+    startScreen.classList.remove('active');
+    questionScreen.classList.add('active');
+    renderQuestion();
+  }
 
-    function renderCourses() {
-      const grid = document.getElementById("courseGrid");
-      grid.innerHTML = "";
-
-      COURSES.forEach(course => {
-        const div = document.createElement("div");
-        div.className = "course-card" + (selectedCourseId === course.id ? " active" : "");
-        div.innerHTML = `
-          <div class="course-title">${course.name}</div>
-          <div class="course-desc">${course.description}</div>
-        `;
-        div.addEventListener("click", () => {
-          selectedCourseId = course.id;
-          renderCourses();
-        });
-        grid.appendChild(div);
-      });
-    }
-
-    function renderQuestions() {
-      sections.forEach(section => {
-        const container = document.getElementById(section.target);
-        container.innerHTML = "";
-        section.questions.forEach(q => {
-          const div = document.createElement("div");
-          div.className = "question";
-          div.innerHTML = `
-            <div class="question-title">Q${q.id}. ${q.text}</div>
-            <div class="options">
-              ${q.options.map((opt, i) => `
-                <label class="option">
-                  <input type="radio" name="q${q.id}" value="${i}">
-                  <span>${opt.label}</span>
-                </label>
-              `).join("")}
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      });
-
-      document.querySelectorAll('input[type="radio"]').forEach(input => {
-        input.addEventListener("change", () => {
-          syncActiveOptionStyles();
-          updateProgress();
-        });
-      });
-    }
-
-    function syncActiveOptionStyles() {
-      document.querySelectorAll(".option").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-        input.closest(".option").classList.add("active");
-      });
-    }
-
-    function updateProgress() {
-      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-      document.getElementById("progressText").textContent = `${answered} / 50`;
-      document.getElementById("progressFill").style.width = `${answered * 2}%`;
-    }
-
-    function getTotals() {
-      const totals = {
-        fundamentals: 0,
-        swing: 0,
-        shortGame: 0,
-        putting: 0,
-        mental: 0,
-        management: 0,
-        fitness: 0,
-        technical: 0,
-        power: 0,
-        pressure: 0
-      };
-
-      sections.forEach(section => {
-        section.questions.forEach(q => {
-          const checked = document.querySelector(`input[name="q${q.id}"]:checked`);
-          if (!checked) return;
-          const selected = q.options[Number(checked.value)];
-          Object.entries(selected.score).forEach(([k, v]) => {
-            totals[k] += v;
-          });
-        });
-      });
-
-      return totals;
-    }
-
-    function detectPlayerType(totals) {
-      const riskScore = totals.mental + totals.management + totals.pressure;
-      const touchScore = totals.shortGame + totals.putting;
-      const powerScore = totals.power + totals.swing;
-      const analysisScore = totals.technical + (totals.management < 5 ? 1 : 0);
-      const mentalSensitiveScore = totals.mental + totals.pressure + (totals.technical < 1.5 ? 0.5 : 0);
-
-      if (analysisScore >= 2.5) return "TECHNICAL";
-      if (mentalSensitiveScore >= 5.5) return "MENTAL";
-      if (powerScore >= 4.5 && totals.management >= 4) return "POWER";
-      if (riskScore >= 6) return "AGGRESSIVE";
-      if (touchScore >= 5 && totals.technical < 2.5) return "FEEL";
-      return "STEADY";
-    }
-
-    function getTopIssues(totals, count = 3) {
-      return Object.entries(totals)
-        .filter(([key]) => CATEGORY_INFO[key])
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, count);
-    }
-
-    function buildTrainingPlan(topIssues, playerType) {
-      const base = [
-        `Day1：最重要課題「${CATEGORY_INFO[topIssues[0][0]].name}」の基礎ドリルを30分`,
-        `Day2：動画撮影しながら「${CATEGORY_INFO[topIssues[1][0]].name}」の再現性チェック`,
-        `Day3：ショートゲーム重点練習（10y・20y・30y）`,
-        `Day4：パットの距離感と1mショートパット反復`,
-        `Day5：次回コースを想定したマネジメント確認`,
-        `Day6：プレッシャー下の1球勝負練習`,
-        `Day7：総合テストと振り返り`
-      ];
-
-      if (playerType === "AGGRESSIVE") base[4] = "Day5：『攻めない勇気』をテーマにレイアップ判断の確認";
-      if (playerType === "STEADY") base[5] = "Day6：安全運転だけで終わらない『攻め所』の確認";
-      if (playerType === "TECHNICAL") base[1] = "Day2：考えすぎ防止のため、修正点を1つだけに絞って動画確認";
-      if (playerType === "FEEL") base[3] = "Day4：距離感基準を数値化して、感覚の再現性を作る";
-      if (playerType === "POWER") base[0] = "Day1：飛ばす練習ではなく『置きにいくティーショット』を30分";
-      if (playerType === "MENTAL") base[5] = "Day6：ミス後ルーティンと呼吸法を組み込んだメンタル練習";
-
-      return base;
-    }
-
-    function buildCaddieCallouts(playerType, course, totals) {
-      const top = getTopIssues(totals, 1);
-      const mainWeakness = top[0] ? top[0][0] : "management";
-      const weaknessName = CATEGORY_INFO[mainWeakness] ? CATEGORY_INFO[mainWeakness].name : "総合調整";
-
-      const base = [
-        `今日の最優先テーマは「${weaknessName}」です。良い1打より、悪い1打を減らす意識で回りましょう。`,
-        "ティーショット前は『どこに置くか』を先に決めてから構えてください。",
-        "グリーンはピンではなく、安全に2パット圏内へ運ぶ発想を持ちましょう。"
-      ];
-
-      const byType = {
-        AGGRESSIVE: "ナイスショットより、次打が簡単になる場所を優先してください。",
-        STEADY: "安全策は強みですが、長い番手を残しすぎないよう注意してください。",
-        TECHNICAL: "情報を集めたら、最後はシンプルに1ターゲット1スイングです。",
-        FEEL: "感覚は武器です。ただし番手だけは必ず数字で確認してください。",
-        POWER: "飛距離優位を使う日は、振る場面より置く場面を先に決めましょう。",
-        MENTAL: "ミス直後は反省より、次の安全地点だけを考えてください。"
-      };
-
-      const byCourse = {
-        otsu: "大津東では長い2打目を難しくしないことが最大の攻略です。",
-        nisshin: "日清都では高低差込みの実質距離を信じることが重要です。",
-        ujitawara: "宇治田原では大型グリーンでの3パット回避が最重要です。"
-      };
-
-      return [...base, byType[playerType], byCourse[course.id]];
-    }
-
-    function renderPremium(courseId, playerType) {
-      const area = document.getElementById("premiumArea");
-
-      if (!isPremiumOpen) {
-        area.innerHTML = `
-          <div class="result-card premium-locked">
-            <h3 style="font-size:24px; margin-bottom:10px;">プレミアム戦略を表示</h3>
-            <p style="max-width:720px; margin:0 auto 18px; color:rgba(255,255,255,.82);">
-              さらに詳細なホール別3ステップ攻略、攻めるべきエリア・守るべきエリアを表示します。
-            </p>
-            <button type="button" class="premium-btn" id="premiumOpenBtn">プレミアム戦略をアンロック</button>
-          </div>
-        `;
-        document.getElementById("premiumOpenBtn").addEventListener("click", () => {
-          isPremiumOpen = true;
-          renderPremium(courseId, playerType);
-        });
-        return;
-      }
-
-      const premium = PREMIUM_DATA[courseId];
-      let mentalText = "";
-      if (playerType === "MENTAL") mentalText = "ミスの分析はホールアウト後で十分です。ラウンド中は『次の安全地点』だけを考えてください。";
-      else if (playerType === "AGGRESSIVE") mentalText = "攻めたい気持ちが出た時ほど、ボギーで十分という発想に戻してください。";
-      else if (playerType === "TECHNICAL") mentalText = "情報収集後は3秒以内に始動するルールを作ると、迷いが減ります。";
-      else if (playerType === "FEEL") mentalText = "感覚が良い日はそれを活かしつつ、番手だけは必ず数字で確認してください。";
-      else if (playerType === "POWER") mentalText = "飛ばせる日は、逆に振らない勇気がスコアを作ります。";
-      else mentalText = "安全第一は強みです。ただし攻めて良いホールではしっかり前に進めてください。";
-
-      let insightText = "";
-      if (courseId === "otsu") insightText = "大津東では、長い2打目をどれだけ減らせるかがスコア差になります。";
-      if (courseId === "nisshin") insightText = "日清都では、見た目距離ではなく実質距離への適応が大きな差を生みます。";
-      if (courseId === "ujitawara") insightText = "宇治田原では、大型グリーンでの1stパット距離感がスコアへ直結します。";
-
-      const advice = COURSE_TYPE_ADVICE[courseId][playerType];
-
-      area.innerHTML = `
-        <div class="result-card premium-open">
-          <div class="premium-head">プレミアム・インサイト</div>
-          <div class="premium-body">
-            <div class="premium-grid">
-              <div class="premium-box">
-                <h3>推奨クラブ方針</h3>
-                <p>${advice.keyClub} を軸に、無理なく置きに行ける番手を優先してください。大叩きの原因は、難しい次打を残すことです。</p>
-              </div>
-              <div class="premium-box blue">
-                <h3>メンタル指示</h3>
-                <p>${mentalText}</p>
-              </div>
-              <div class="premium-box green">
-                <h3>データ視点</h3>
-                <p>${insightText}</p>
-              </div>
-            </div>
-
-            <h3>18ホールの方針</h3>
-            <div class="premium-map">
-              <div class="map-box">
-                <div style="font-weight:900; color:#b91c1c; margin-bottom:8px;">攻めるべきエリア</div>
-                <div>${premium.map.attack}</div>
-              </div>
-              <div class="map-box blue">
-                <div style="font-weight:900; color:#1d4ed8; margin-bottom:8px;">守るべきエリア</div>
-                <div>${premium.map.defend}</div>
-              </div>
-            </div>
-
-            <h3>代表ホールの3ステップ攻略</h3>
-            <div>
-              ${premium.steps.map(step => `
-                <div class="step-card">
-                  <div class="step-head">${step.name}</div>
-                  <div class="step-grid">
-                    <div class="step-item">
-                      <div class="step-label">1. TEE SHOT</div>
-                      <div>${step.tee}</div>
-                    </div>
-                    <div class="step-item">
-                      <div class="step-label">2. SECOND</div>
-                      <div>${step.second}</div>
-                    </div>
-                    <div class="step-item">
-                      <div class="step-label">3. GREEN</div>
-                      <div>${step.green}</div>
-                    </div>
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderResults(totals) {
-      const playerType = detectPlayerType(totals);
-      const course = COURSES.find(c => c.id === selectedCourseId);
-      const topIssues = getTopIssues(totals, 3);
-      const trainingPlan = buildTrainingPlan(topIssues, playerType);
-      const affiliate = AFFILIATE_RECOMMENDATIONS[playerType];
-      const advice = COURSE_TYPE_ADVICE[selectedCourseId][playerType];
-      const aiCallouts = buildCaddieCallouts(playerType, course, totals);
-
-      document.getElementById("profileType").textContent = playerType;
-      document.getElementById("profileMessage").textContent = PROFILE_MESSAGES[playerType];
-
-      document.getElementById("courseAvgScore").textContent = course.stats.avgScore;
-      document.getElementById("courseFwKeep").textContent = course.stats.fwKeep;
-      document.getElementById("courseThirdLabel").textContent = course.stats.putts ? "平均パット" : "パーオン率";
-      document.getElementById("courseThirdValue").textContent = course.stats.putts || course.stats.parOn;
-      document.getElementById("courseKey").textContent = course.stats.key;
-
-      topIssues.forEach((item, idx) => {
-        const key = item[0];
-        document.getElementById(`issue${idx + 1}`).textContent = CATEGORY_INFO[key].name;
-        document.getElementById(`issue${idx + 1}Actions`).innerHTML =
-          CATEGORY_INFO[key].actions.map(a => `<li>${a}</li>`).join("");
-      });
-
-      document.getElementById("courseEssence").textContent = course.essence;
-      document.getElementById("adviceTitle").textContent = advice.title;
-      document.getElementById("adviceDesc").textContent = advice.desc;
-      document.getElementById("adviceAction").textContent = advice.action;
-      document.getElementById("adviceClub").textContent = advice.keyClub;
-      document.getElementById("forbiddenText").textContent = TYPE_PROHIBITIONS[playerType];
-
-      document.getElementById("aiCaddieList").innerHTML = aiCallouts.map((text, idx) => `
-        <div class="ai-item">
-          <div class="ai-num">${idx + 1}</div>
-          <div>${text}</div>
-        </div>
-      `).join("");
-
-      document.getElementById("holesList").innerHTML = course.holes.map(hole => `
-        <div class="hole-card">
-          <div style="min-width:210px;">
-            <div class="hole-name">${hole.name}</div>
-            <div class="hole-tags">
-              ${hole.tags.map(tag => `<span class="hole-tag">${tag}</span>`).join("")}
-            </div>
-          </div>
-          <div>${hole.strategy}</div>
-        </div>
-      `).join("");
-
-      document.getElementById("trainingPlan").innerHTML =
-        trainingPlan.map(p => `<li>${p}</li>`).join("");
-
-      document.getElementById("affiliateTitle").textContent = affiliate.title;
-      document.getElementById("affiliateText").textContent = affiliate.text;
-      document.getElementById("affiliateLink").href = affiliate.url;
-
-      renderPremium(selectedCourseId, playerType);
-
-      document.getElementById("resultSection").style.display = "block";
-      window.scrollTo({
-        top: document.getElementById("resultSection").offsetTop - 20,
-        behavior: "smooth"
-      });
-    }
-
-    renderCourses();
-    renderQuestions();
-    updateProgress();
-
-    document.getElementById("quizForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-      if (!selectedCourseId) {
-        alert("次回ラウンド予定のコースを選択してください。");
-        return;
-      }
-      if (answered < 50) {
-        alert("50問すべて回答してください。");
-        return;
-      }
-      const totals = getTotals();
-      renderResults(totals);
+  function renderQuestion() {
+    const qData = questions[currentQuestion];
+    qNum.innerText = currentQuestion + 1;
+    qTitle.innerText = qData.q;
+    progressFill.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+    
+    optionList.innerHTML = '';
+    qData.options.forEach((opt, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => handleAnswer(index);
+      optionList.appendChild(btn);
     });
+  }
 
-    function fullReset() {
-      document.getElementById("quizForm").reset();
-      selectedCourseId = "";
-      isPremiumOpen = false;
-      renderCourses();
-      syncActiveOptionStyles();
-      document.getElementById("resultSection").style.display = "none";
-      document.getElementById("premiumArea").innerHTML = "";
-      updateProgress();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  function handleAnswer(index) {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      renderQuestion();
+    } else {
+      showLoading();
     }
+  }
 
-    document.getElementById("resetBtn").addEventListener("click", fullReset);
-    document.getElementById("resetFromResultBtn").addEventListener("click", fullReset);
+  function showLoading() {
+    questionScreen.classList.remove('active');
+    loadingScreen.classList.add('active');
+    
+    const msgs = [
+      "物理・解剖学エンジンを起動しています...",
+      "あなたの回答からエラーパターンを抽出中...",
+      "プロのスイングDNAと照合中...",
+      "専用の改善ドリルを生成中..."
+    ];
+    let msgIndex = 0;
+    const msgEl = document.getElementById('loading-message');
+    
+    const interval = setInterval(() => {
+      msgIndex++;
+      if (msgIndex < msgs.length) {
+        msgEl.innerText = msgs[msgIndex];
+      } else {
+        clearInterval(interval);
+        showResult();
+      }
+    }, 1200);
+  }
 
-    document.getElementById("editBtn").addEventListener("click", function() {
-      document.getElementById("resultSection").style.display = "none";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  </script>
+  function showResult() {
+    loadingScreen.classList.remove('active');
+    resultScreen.classList.add('active');
+    startTimer(15 * 60); // 15 minutes
+  }
+
+  // Timer functionality for Paywall
+  function startTimer(duration) {
+    let timer = duration, minutes, seconds;
+    const display = document.getElementById('timer');
+    setInterval(function () {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.textContent = minutes + ":" + seconds;
+
+      if (--timer < 0) {
+        timer = 0;
+      }
+    }, 1000);
+  }
+</script>
+
 </body>
 </html>
