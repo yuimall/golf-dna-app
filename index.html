@@ -3,119 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宿泊施設開発 マーケットリサーチツール</title>
+    <title>宿泊施設開発 マーケットリサーチ Pro</title>
     <style>
-        /* CSSをここに統合しました */
         :root {
-            --primary: #1e293b;
-            --secondary: #475569;
-            --accent: #2563eb;
-            --bg: #f8fafc;
-            --border: #e2e8f0;
-            --white: #ffffff;
+            --primary: #1e293b; --secondary: #475569; --accent: #2563eb;
+            --bg: #f8fafc; --border: #e2e8f0; --white: #ffffff;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            background-color: var(--bg);
-            color: var(--primary);
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg); color: var(--primary);
+            line-height: 1.6; padding: 20px;
         }
-
-        .container { max-width: 800px; margin: 0 auto; }
-
-        header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
-
-        header h1 { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        
+        /* ここがAPIキーの入力エリアです */
+        .settings-box {
+            background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .settings-box label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; color: var(--secondary); }
+        .settings-box input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; }
 
         .search-section {
-            background: var(--white);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin-bottom: 30px;
+            background: var(--white); padding: 24px; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 30px;
         }
-
         .input-group { display: flex; gap: 10px; }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        button {
-            background-color: var(--accent);
-            color: var(--white);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        #loadingSection { text-align: center; padding: 40px 0; }
-
-        .spinner {
-            width: 30px; height: 30px;
-            border: 3px solid #cbd5e1;
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #reportSection {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-
-        .report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        h3 {
-            font-size: 18px;
-            background: #f1f5f9;
-            padding: 8px 12px;
-            border-left: 4px solid var(--accent);
-            margin: 25px 0 15px 0;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-
-        th, td { border: 1px solid var(--border); padding: 10px 14px; font-size: 14px; text-align: left; }
-
-        th { background: #fafafa; width: 30%; font-weight: 600; }
-
-        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .insight-card { padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
-
-        .opportunity { border-top: 4px solid #10b981; background: #f0fdf4; }
-
-        .threat { border-top: 4px solid #ef4444; background: #fef2f2; }
-
-        .source { display: block; font-size: 11px; color: #64748b; margin-top: 5px; }
-
-        .hidden { display: none; }
+        input[id="areaInput"] { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 16px; }
+        button { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
         
-        .secondary-btn { background: #f1f5f9; color: var(--accent); border: 1px solid var(--accent); padding: 5px 12px; font-size: 12px; }
+        #loading { text-align: center; padding: 40px 0; display: none; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #cbd5e1; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        #report { background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); display: none; }
+        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 20px; padding-bottom: 10px; }
+        h3 { font-size: 18px; background: #f1f5f9; padding: 8px 12px; border-left: 4px solid var(--accent); margin: 32px 0 16px 0; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid var(--border); padding: 12px; font-size: 14px; text-align: left; }
+        th { background: #fafafa; width: 30%; }
+        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .insight-card { padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+        .opportunity { border-top: 4px solid #10b981; background: #f0fdf4; }
+        .threat { border-top: 4px solid #ef4444; background: #fef2f2; }
     </style>
 </head>
 <body>
@@ -124,91 +56,106 @@
             <h1>宿泊施設開発 マーケットリサーチツール</h1>
         </header>
 
+        <div class="settings-box">
+            <label>🔑 Gemini API Key</label>
+            <input type="password" id="apiKey" placeholder="ここにAPIキーを貼り付けてください">
+        </div>
+
         <section class="search-section">
             <div class="input-group">
-                <input type="text" id="areaInput" placeholder="例：長野県白馬村、京都市東山区...">
+                <input type="text" id="areaInput" placeholder="例：長野県白馬村、北海道ニセコ町...">
                 <button id="searchBtn">リサーチ実行</button>
             </div>
         </section>
 
-        <div id="loadingSection" class="hidden">
+        <div id="loading">
             <div class="spinner"></div>
-            <p id="loadingStatus">データを検索中...</p>
+            <p id="status">AIが最新データを調査中...</p>
         </div>
 
-        <section id="reportSection" class="hidden">
+        <div id="report">
             <div class="report-header">
                 <h2 id="reportTitle"></h2>
-                <button id="copyBtn" class="secondary-btn">テキストをコピー</button>
+                <button onclick="copyReport()" style="padding: 5px 10px; font-size: 12px; background: #f1f5f9; color: #1e293b; border: 1px solid #ccc;">コピー</button>
             </div>
             <div id="reportContent"></div>
-        </section>
+        </div>
     </div>
 
     <script>
-        // JavaScriptをここに統合しました
         const searchBtn = document.getElementById('searchBtn');
-        const areaInput = document.getElementById('areaInput');
-        const loadingSection = document.getElementById('loadingSection');
-        const loadingStatus = document.getElementById('loadingStatus');
-        const reportSection = document.getElementById('reportSection');
-        const reportContent = document.getElementById('reportContent');
-        const reportTitle = document.getElementById('reportTitle');
-        const copyBtn = document.getElementById('copyBtn');
+        const apiKeyInput = document.getElementById('apiKey');
+
+        // キーを保存しておく機能
+        if(localStorage.getItem('gemini_api_key')) apiKeyInput.value = localStorage.getItem('gemini_api_key');
 
         searchBtn.addEventListener('click', async () => {
-            const area = areaInput.value.trim();
-            if (!area) return;
+            const area = document.getElementById('areaInput').value.trim();
+            const key = apiKeyInput.value.trim();
 
-            reportSection.classList.add('hidden');
-            loadingSection.classList.remove('hidden');
+            if (!area) return alert('調査したい地域を入力してください');
+            if (!key) return alert('APIキーを入力してください');
+            
+            localStorage.setItem('gemini_api_key', key);
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('report').style.display = 'none';
 
-            const steps = ["アクセスを算出中...", "地価データを照会中...", "条例を確認中...", "単価を収集中...", "分析を完了します..."];
-            for (const step of steps) {
-                loadingStatus.textContent = step;
-                await new Promise(r => setTimeout(r, 600));
+            try {
+                const reportData = await fetchMarketData(area, key);
+                renderReport(area, reportData);
+            } catch (error) {
+                alert('エラーが発生しました。キーが正しいか確認してください。');
+                console.error(error);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
             }
-
-            renderReport(area);
-            loadingSection.classList.add('hidden');
-            reportSection.classList.remove('hidden');
         });
 
-        function renderReport(area) {
-            reportTitle.textContent = `リサーチ：${area}`;
-            reportContent.innerHTML = `
-                <h3>1. 基本情報</h3>
-                <table>
-                    <tr><th>所在地</th><td>${area}</td></tr>
-                    <tr><th>アクセス</th><td>主要駅から車で約15分。最寄り空港より約60分。<br><span class="source">出所：Google Maps</span></td></tr>
-                </table>
-
-                <h3>2. 土地データ</h3>
-                <table>
-                    <tr><th>公示地価</th><td>約 58,000円/㎡（前年比 +1.8%）<br><span class="source">出所：国交省公示地価</span></td></tr>
-                    <tr><th>留意点</th><td>景観条例による色彩・高さ制限あり（要追加調査）。</td></tr>
-                </table>
-
-                <h3>3. 市場データ</h3>
-                <table>
-                    <tr><th>ADR目安</th><td>通常期：15,000円〜 / 繁忙期：35,000円〜<br><span class="source">出所：OTA推計</span></td></tr>
-                </table>
-
-                <h3>4. インサイト</h3>
-                <div class="insight-grid">
-                    <div class="insight-card opportunity">
-                        <strong>機会</strong><br><small>高級層向けの供給が不足しており、開発余地が大きい。</small>
-                    </div>
-                    <div class="insight-card threat">
-                        <strong>脅威</strong><br><small>冬季と夏季で需要に差があり、通年の稼働率確保が課題。</small>
-                    </div>
-                </div>
-            `;
+        async function fetchMarketData(area, key) {
+            const prompt = `あなたは宿泊市場専門のコンサルタントです。${area}について調査し、JSON形式で出力してください。捏造は厳禁です。数値が不明なら「要調査」としてください。`;
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt + ' 出力形式: { "access": "...", "potential": "...", "land_use": "...", "land_price": "...", "regulation": "...", "hotel_count": "...", "hotel_trend": "...", "adr": "...", "target": "...", "opportunities": ["..."], "threats": ["..."] }' }] }],
+                    generationConfig: { response_mime_type: "application/json" }
+                })
+            });
+            const data = await response.json();
+            return JSON.parse(data.candidates[0].content.parts[0].text);
         }
 
-        copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(reportContent.innerText).then(() => alert('コピーしました'));
-        });
+        function renderReport(area, data) {
+            document.getElementById('reportTitle').textContent = `市場調査レポート：${area}`;
+            document.getElementById('reportContent').innerHTML = `
+                <h3>1. 基本情報</h3>
+                <table>
+                    <tr><th>アクセス</th><td>${data.access}</td></tr>
+                    <tr><th>観光ポテンシャル</th><td>${data.potential}</td></tr>
+                </table>
+                <h3>2. 土地・不動産データ</h3>
+                <table>
+                    <tr><th>用途地域</th><td>${data.land_use}</td></tr>
+                    <tr><th>地価目安</th><td>${data.land_price}</td></tr>
+                    <tr><th>開発留意点</th><td>${data.regulation}</td></tr>
+                </table>
+                <h3>3. 宿泊市場データ</h3>
+                <table>
+                    <tr><th>施設数・傾向</th><td>${data.hotel_count}<br>${data.hotel_trend}</td></tr>
+                    <tr><th>ADR / ターゲット</th><td>単価：${data.adr}<br>層：${data.target}</td></tr>
+                </table>
+                <h3>4. インサイト</h3>
+                <div class="insight-grid">
+                    <div class="insight-card opportunity"><strong>【機会】</strong><ul>${data.opportunities.map(o => `<li>${o}</li>`).join('')}</ul></div>
+                    <div class="insight-card threat"><strong>【脅威】</strong><ul>${data.threats.map(t => `<li>${t}</li>`).join('')}</ul></div>
+                </div>
+            `;
+            document.getElementById('report').style.display = 'block';
+        }
+
+        function copyReport() {
+            navigator.clipboard.writeText(document.getElementById('reportContent').innerText).then(() => alert('コピーしました'));
+        }
     </script>
 </body>
 </html>
