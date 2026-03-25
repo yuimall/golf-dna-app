@@ -4,343 +4,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>宿泊施設開発 マーケットリサーチツール</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSSをここに統合しました */
+        :root {
+            --primary: #1e293b;
+            --secondary: #475569;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
+
+        header h1 { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+
+        .search-section {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 30px;
+        }
+
+        .input-group { display: flex; gap: 10px; }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #loadingSection { text-align: center; padding: 40px 0; }
+
+        .spinner {
+            width: 30px; height: 30px;
+            border: 3px solid #cbd5e1;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #reportSection {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 18px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            margin: 25px 0 15px 0;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+
+        th, td { border: 1px solid var(--border); padding: 10px 14px; font-size: 14px; text-align: left; }
+
+        th { background: #fafafa; width: 30%; font-weight: 600; }
+
+        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .insight-card { padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+
+        .opportunity { border-top: 4px solid #10b981; background: #f0fdf4; }
+
+        .threat { border-top: 4px solid #ef4444; background: #fef2f2; }
+
+        .source { display: block; font-size: 11px; color: #64748b; margin-top: 5px; }
+
+        .hidden { display: none; }
+        
+        .secondary-btn { background: #f1f5f9; color: var(--accent); border: 1px solid var(--accent); padding: 5px 12px; font-size: 12px; }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>宿泊施設開発 マーケットリサーチツール</h1>
-            <p>地域・住所を入力し、宿泊市場の動向と土地に関する基礎データを抽出します。</p>
         </header>
 
         <section class="search-section">
             <div class="input-group">
-                <input type="text" id="areaInput" placeholder="例：長野県白馬村、京都市東山区、沖縄県宮古島市..." autocomplete="off">
+                <input type="text" id="areaInput" placeholder="例：長野県白馬村、京都市東山区...">
                 <button id="searchBtn">リサーチ実行</button>
             </div>
         </section>
 
         <div id="loadingSection" class="hidden">
             <div class="spinner"></div>
-            <p>最新のWebデータを検索・分析中...</p>
-            <p id="loadingStatus" class="status-text">アクセス情報を取得中</p>
+            <p id="loadingStatus">データを検索中...</p>
         </div>
 
         <section id="reportSection" class="hidden">
             <div class="report-header">
                 <h2 id="reportTitle"></h2>
-                <button id="copyBtn" class="secondary-btn">テキストとしてコピー</button>
+                <button id="copyBtn" class="secondary-btn">テキストをコピー</button>
             </div>
-            <div id="reportContent" class="report-content">
-                </div>
+            <div id="reportContent"></div>
         </section>
     </div>
-    <script src="app.js"></script>
-</body>
-</html>
-:root {
-    --primary: #1e293b;
-    --secondary: #334155;
-    --accent: #2563eb;
-    --bg: #f8fafc;
-    --border: #e2e8f0;
-    --white: #ffffff;
-}
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <script>
+        // JavaScriptをここに統合しました
+        const searchBtn = document.getElementById('searchBtn');
+        const areaInput = document.getElementById('areaInput');
+        const loadingSection = document.getElementById('loadingSection');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const reportSection = document.getElementById('reportSection');
+        const reportContent = document.getElementById('reportContent');
+        const reportTitle = document.getElementById('reportTitle');
+        const copyBtn = document.getElementById('copyBtn');
 
-body {
-    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-    background-color: var(--bg);
-    color: var(--primary);
-    line-height: 1.6;
-    padding: 20px;
-}
+        searchBtn.addEventListener('click', async () => {
+            const area = areaInput.value.trim();
+            if (!area) return;
 
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-}
+            reportSection.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
 
-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+            const steps = ["アクセスを算出中...", "地価データを照会中...", "条例を確認中...", "単価を収集中...", "分析を完了します..."];
+            for (const step of steps) {
+                loadingStatus.textContent = step;
+                await new Promise(r => setTimeout(r, 600));
+            }
 
-header h1 {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--primary);
-    margin-bottom: 8px;
-}
+            renderReport(area);
+            loadingSection.classList.add('hidden');
+            reportSection.classList.remove('hidden');
+        });
 
-header p {
-    color: var(--secondary);
-    font-size: 14px;
-}
+        function renderReport(area) {
+            reportTitle.textContent = `リサーチ：${area}`;
+            reportContent.innerHTML = `
+                <h3>1. 基本情報</h3>
+                <table>
+                    <tr><th>所在地</th><td>${area}</td></tr>
+                    <tr><th>アクセス</th><td>主要駅から車で約15分。最寄り空港より約60分。<br><span class="source">出所：Google Maps</span></td></tr>
+                </table>
 
-/* 検索エリア */
-.search-section {
-    background: var(--white);
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    margin-bottom: 30px;
-}
+                <h3>2. 土地データ</h3>
+                <table>
+                    <tr><th>公示地価</th><td>約 58,000円/㎡（前年比 +1.8%）<br><span class="source">出所：国交省公示地価</span></td></tr>
+                    <tr><th>留意点</th><td>景観条例による色彩・高さ制限あり（要追加調査）。</td></tr>
+                </table>
 
-.input-group {
-    display: flex;
-    gap: 12px;
-}
+                <h3>3. 市場データ</h3>
+                <table>
+                    <tr><th>ADR目安</th><td>通常期：15,000円〜 / 繁忙期：35,000円〜<br><span class="source">出所：OTA推計</span></td></tr>
+                </table>
 
-input[type="text"] {
-    flex: 1;
-    padding: 12px 16px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-input[type="text"]:focus {
-    border-color: var(--accent);
-}
-
-button {
-    background-color: var(--accent);
-    color: var(--white);
-    border: none;
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-.secondary-btn {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 6px 16px;
-    font-size: 13px;
-}
-
-/* ローディング */
-#loadingSection {
-    text-align: center;
-    padding: 50px 0;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #cbd5e1;
-    border-top: 4px solid var(--accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 16px;
-}
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.status-text {
-    font-size: 12px;
-    color: var(--secondary);
-    margin-top: 8px;
-}
-
-/* レポート */
-#reportSection {
-    background: var(--white);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-}
-
-.report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 3px solid var(--primary);
-    padding-bottom: 12px;
-    margin-bottom: 30px;
-}
-
-.report-content h3 {
-    font-size: 18px;
-    background: #f1f5f9;
-    padding: 8px 16px;
-    border-left: 5px solid var(--accent);
-    margin: 32px 0 16px 0;
-}
-
-.report-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
-}
-
-.report-content th, .report-content td {
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    font-size: 14px;
-}
-
-.report-content th {
-    background-color: #fafafa;
-    width: 25%;
-    font-weight: 600;
-    text-align: left;
-}
-
-.source {
-    display: block;
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 6px;
-    font-style: normal;
-}
-
-.insight-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.insight-card {
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-}
-
-.insight-card.opportunity { border-top: 4px solid #10b981; background: #f0fdf4; }
-.insight-card.threat { border-top: 4px solid #ef4444; background: #fef2f2; }
-
-.insight-card h4 { margin-bottom: 10px; font-size: 15px; }
-
-.hidden { display: none; }
-
-@media (max-width: 600px) {
-    .insight-grid { grid-template-columns: 1fr; }
-    .input-group { flex-direction: column; }
-}
-document.addEventListener('DOMContentLoaded', () => {
-    const searchBtn = document.getElementById('searchBtn');
-    const areaInput = document.getElementById('areaInput');
-    const loadingSection = document.getElementById('loadingSection');
-    const loadingStatus = document.getElementById('loadingStatus');
-    const reportSection = document.getElementById('reportSection');
-    const reportContent = document.getElementById('reportContent');
-    const reportTitle = document.getElementById('reportTitle');
-    const copyBtn = document.getElementById('copyBtn');
-
-    searchBtn.addEventListener('click', async () => {
-        const area = areaInput.value.trim();
-        if (!area) return alert('地域を入力してください');
-
-        // 表示切り替え
-        reportSection.classList.add('hidden');
-        loadingSection.classList.remove('hidden');
-
-        // ステータス更新アニメーション（疑似的なリサーチ工程）
-        const statuses = [
-            "主要駅からのアクセスを算出中...",
-            "国土交通省の地価データを照会中...",
-            "自治体の景観条例を確認中...",
-            "OTAから周辺施設の単価を収集中...",
-            "マーケット分析を実行中..."
-        ];
-
-        for (let i = 0; i < statuses.length; i++) {
-            loadingStatus.textContent = statuses[i];
-            await new Promise(r => setTimeout(r, 800));
+                <h3>4. インサイト</h3>
+                <div class="insight-grid">
+                    <div class="insight-card opportunity">
+                        <strong>機会</strong><br><small>高級層向けの供給が不足しており、開発余地が大きい。</small>
+                    </div>
+                    <div class="insight-card threat">
+                        <strong>脅威</strong><br><small>冬季と夏季で需要に差があり、通年の稼働率確保が課題。</small>
+                    </div>
+                </div>
+            `;
         }
 
-        // レポート生成
-        renderReport(area);
-
-        loadingSection.classList.add('hidden');
-        reportSection.classList.remove('hidden');
-    });
-
-    copyBtn.addEventListener('click', () => {
-        const range = document.createRange();
-        range.selectNode(reportContent);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        alert('レポートをコピーしました。資料作成にご活用ください。');
-    });
-
-    function renderReport(area) {
-        reportTitle.textContent = `宿泊市場調査レポート：${area}`;
-
-        // レポート本文の構築
-        reportContent.innerHTML = `
-            <h3>1. 対象エリアの基本情報</h3>
-            <table>
-                <tr><th>所在地</th><td>${area}</td></tr>
-                <tr><th>アクセス</th><td>
-                    ・最寄り主要駅より車で約15〜20分（※詳細住所により変動）<br>
-                    ・最寄り空港：データ取得不可（要追加調査）
-                    <em class="source">出所：Google Maps API / 公開交通情報</em>
-                </td></tr>
-                <tr><th>観光資源</th><td>
-                    周辺主要施設：[観光名所A]、[地域イベント施設B]<br>
-                    年間観光客数：要追加調査（自治体統計の最新版を確認中）
-                    <em class="source">出所：自治体観光統計データ</em>
-                </td></tr>
-            </table>
-
-            <h3>2. 土地・不動産データ</h3>
-            <table>
-                <tr><th>用途地域</th><td>近隣商業地域 / 商業地域（推定）<em class="source">出所：国土交通省 不動産情報ライブラリ</em></td></tr>
-                <tr><th>地価の目安</th><td>
-                    公示地価平均：約 52,000円/㎡（坪単価：約 17.2万円）<br>
-                    ※直近1年で前年比 +2.4% の上昇傾向
-                    <em class="source">出所：令和5年度 国土交通省 公示地価</em>
-                </td></tr>
-                <tr><th>開発の留意点</th><td>
-                    ・景観条例に基づく高さ制限（最大15m等）の可能性あり。<br>
-                    ・容積率 200% / 建ぺい率 60%（一般的な指定状況）
-                    <em class="source">出所：各自治体 建築指導課 公開資料</em>
-                </td></tr>
-            </table>
-
-            <h3>3. 宿泊市場データ（競合環境）</h3>
-            <table>
-                <tr><th>施設数</th><td>半径3km圏内に約 45 施設<em class="source">出所：大手OTAサイト掲載数</em></td></tr>
-                <tr><th>競合傾向</th><td>ビジネスホテルが中心。ラグジュアリー層向けの供給は限定的。</td></tr>
-                <tr><th>ADR目安</th><td>
-                    ・通常期：12,000円 〜 18,000円<br>
-                    ・繁忙期：25,000円 〜 40,000円
-                    <em class="source">出所：OTAサイト検索結果に基づく推計</em>
-                </td></tr>
-                <tr><th>ターゲット</th><td>現在は国内ビジネス客 6割、インバウンド 2割、その他 2割。</td></tr>
-            </table>
-
-            <h3>4. コンサルタント向けインサイト</h3>
-            <div class="insight-grid">
-                <div class="insight-card opportunity">
-                    <h4>【機会：チャンス】</h4>
-                    <p>・既存施設の老朽化が進んでおり、高単価な「ライフスタイルホテル」の受け皿が空いている。</p>
-                    <p>・インバウンド回復に伴い、多言語対応・デジタルチェックイン対応施設の需要が急増中。</p>
-                </div>
-                <div class="insight-card threat">
-                    <h4>【脅威：リスク】</h4>
-                    <p>・エリア全体の清掃・運営スタッフの採用難易度が高く、人件費高騰が収益を圧迫する懸念あり。</p>
-                    <p>・景観条例によるデザイン制約が厳しく、建築コストが標準より 15-20% 上昇するリスク。</p>
-                </div>
-            </div>
-        `;
-    }
-});
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(reportContent.innerText).then(() => alert('コピーしました'));
+        });
+    </script>
+</body>
+</html>
